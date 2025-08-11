@@ -4,11 +4,7 @@ import { projects, Project } from "@/lib/data";
 import Container from "@/components/ui/Container";
 import Section from "@/components/ui/Section";
 
-interface ProjectLayoutProps {
-  children: React.ReactNode;
-  params: { slug: string };
-}
-
+// Removed custom ProjectLayoutProps; align with Next.js 15 params Promise typing
 export async function generateStaticParams() {
   return (projects as Project[]).map((p) => ({ slug: p.slug }));
 }
@@ -16,9 +12,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const slug = params.slug;
+  const { slug } = await params;
   const project = (projects as Project[]).find((p) => p.slug === slug);
   if (!project) return {};
 
@@ -65,8 +61,11 @@ export async function generateMetadata({
 export default async function ProjectLayout({
   children,
   params,
-}: ProjectLayoutProps) {
-  const slug = params.slug;
+}: {
+  children: React.ReactNode;
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
   const project = (projects as Project[]).find((p) => p.slug === slug);
   if (!project) return notFound();
 
