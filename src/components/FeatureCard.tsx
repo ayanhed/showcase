@@ -4,9 +4,11 @@ import Card from "./ui/Card";
 import { cn } from "@/lib/utils";
 import Text from "./ui/Text";
 import Button from "./ui/Button";
+import Icon from "./ui/Icon";
+import { LucideIcon } from "lucide-react";
 
 interface FeatureCardProps {
-  icon: string;
+  icon: LucideIcon;
   title: string;
   description: string;
   variant?: "green" | "orange" | "purple" | "blue";
@@ -46,7 +48,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
               variantColors[variant]
             )}
           >
-            <span className="text-white text-xs">{icon}</span>
+            <Icon icon={icon} size="sm" className="text-white" />
           </div>
           <h4 className="text-white font-semibold">{title}</h4>
         </div>

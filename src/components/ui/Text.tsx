@@ -12,12 +12,12 @@ interface TextProps {
 }
 
 const sizeClasses = {
-  xs: "text-xs",
-  sm: "text-sm",
-  md: "text-base leading-loose",
-  lg: "text-lg leading-loose",
-  xl: "text-xl leading-loose",
-  "2xl": "text-2xl leading-loose",
+  xs: "text-xs mb-1",
+  sm: "text-sm mb-1 leading-snug",
+  md: "text-base mb-2 leading-loose",
+  lg: "text-lg mb-4 leading-loose",
+  xl: "text-xl mb-4 leading-loose",
+  "2xl": "text-2xl mb-4 leading-loose",
 };
 
 const variantClasses = {
@@ -59,8 +59,7 @@ export default function Text({
         variantClasses[variant],
         weightClasses[weight],
         alignClasses[align],
-        className,
-        "mb-4"
+        className
       )}
     >
       {children}

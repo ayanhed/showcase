@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Github, Mail, MessageCircle } from "lucide-react";
+import {
+  ArrowRight,
+  Github,
+  Linkedin,
+  Mail,
+  MessageCircle,
+} from "lucide-react";
 import { personalInfo, skills, projects, contactInfo } from "@/lib/data";
 
 // Import our new components
@@ -18,6 +24,8 @@ import {
 } from "@/components/ui";
 import FeatureCard from "@/components/FeatureCard";
 import ProjectCard from "@/components/ProjectCard";
+import { Briefcase, Laptop } from "lucide-react";
+import ContactQuickLinks from "@/components/ContactQuickLinks";
 
 export default function Home() {
   return (
@@ -44,7 +52,7 @@ export default function Home() {
             </Text>
             <Stack direction="horizontal" spacing="md">
               <Button icon={ArrowRight} iconPosition="right">
-                <Link href={contactInfo.github}>View my Github</Link>
+                <Link href={contactInfo.github}>My Github</Link>
               </Button>
               <Button
                 variant="secondary"
@@ -66,7 +74,7 @@ export default function Home() {
             {/* Services Cards */}
             <Stack spacing="md">
               <FeatureCard
-                icon="⭐"
+                icon={Briefcase}
                 title="Professional"
                 description="With 8+ years of experience in software development, I've worked on diverse projects from startups to enterprise solutions. Always learning, always growing."
                 variant="purple"
@@ -76,7 +84,7 @@ export default function Home() {
                 }}
               />
               <FeatureCard
-                icon="💻"
+                icon={Laptop}
                 title="Freelance"
                 description="Whether you need a new project developed from scratch or assistance with an ongoing one, I offer expert freelance services tailored to your needs."
                 variant="green"
@@ -127,9 +135,9 @@ export default function Home() {
             >
               <ProjectCard
                 title={project.title}
+                slug={project.slug}
                 description={project.description}
                 date={project.date}
-                techStack={project.tech}
                 liveDemo={project.link}
                 isLatest={project.isLatest}
                 index={index}
@@ -165,29 +173,7 @@ export default function Home() {
 
         {/* Contact Form - Now using our component */}
         <ContactForm />
-
-        <Animate
-          type="slideUp"
-          duration={0.8}
-          delay={0.4}
-          once={true}
-          className="text-center mt-8"
-        >
-          <Text variant="muted" align="center">
-            Or contact me with...
-          </Text>
-          <Stack direction="horizontal" spacing="md" className="justify-center">
-            <Button variant="secondary" icon={Mail}>
-              <Link href={`mailto:${contactInfo.email}`}>Email</Link>
-            </Button>
-            <Button variant="secondary" icon={Github}>
-              <Link href={contactInfo.github}>GitHub</Link>
-            </Button>
-            <Button variant="secondary" icon={MessageCircle}>
-              <Link href="#">LinkedIn</Link>
-            </Button>
-          </Stack>
-        </Animate>
+        <ContactQuickLinks />
       </Section>
     </div>
   );

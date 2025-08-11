@@ -1,17 +1,19 @@
 import React from "react";
 import { ArrowRight } from "lucide-react";
 import Card from "./ui/Card";
-import Badge from "./ui/Badge";
 import Heading from "./ui/Heading";
 import Button from "./ui/Button";
 import { Grid, Stack, Text } from "./ui";
 import Image from "next/image";
+import NextLink from "next/link";
+import Icon from "./ui/Icon";
+import { Monitor } from "lucide-react";
 
 interface ProjectCardProps {
   title: string;
+  slug?: string;
   description: string;
   date: string;
-  techStack: string[];
   liveDemo?: string;
   github?: string;
   caseStudy?: string;
@@ -22,9 +24,9 @@ interface ProjectCardProps {
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
   title,
+  slug,
   description,
   date,
-  techStack,
   liveDemo,
   github,
   caseStudy,
@@ -46,13 +48,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                 priority={Boolean(isLatest) || index === 0}
                 className="object-cover"
               />
-              {/* <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b via-transparent to-dark-card"></div> */}
             </>
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-white text-2xl">🖥️</span>
+                  <Icon icon={Monitor} size="2xl" className="text-white" />
                 </div>
                 <Text weight="semibold">Project Screenshot</Text>
                 <Text size="sm" variant="muted">
@@ -64,33 +65,23 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         </div>
         <Stack spacing="md" className="p-6">
           <Stack direction="horizontal" spacing="sm" align="center">
-            <Heading level={3}>{title}</Heading>
+            {slug ? (
+              <NextLink href={`/projects/${slug}`} className="hover:underline">
+                <Heading level={3}>{title}</Heading>
+              </NextLink>
+            ) : (
+              <Heading level={3}>{title}</Heading>
+            )}
           </Stack>
           <Text variant="muted">{description}</Text>
 
-          {/* Tech Stack */}
-          <Stack direction="horizontal" spacing="sm" wrap={true}>
-            {techStack.map((tech) => (
-              <Badge key={tech} size="sm">
-                {tech}
-              </Badge>
-            ))}
-          </Stack>
-
           <Stack direction="horizontal" spacing="md">
-            {liveDemo && (
-              <Button icon={ArrowRight} iconPosition="right">
-                <a href={liveDemo}>Visit website</a>
-              </Button>
-            )}
-            {github && (
-              <Button
-                variant="secondary"
-                icon={ArrowRight}
-                iconPosition="right"
-              >
-                <a href={github}>View code</a>
-              </Button>
+            {slug && (
+              <NextLink href={`/projects/${slug}`}>
+                <Button icon={ArrowRight} iconPosition="right">
+                  Read more
+                </Button>
+              </NextLink>
             )}
           </Stack>
         </Stack>

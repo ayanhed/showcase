@@ -389,7 +389,7 @@ export default function SkillSpectrum({
             onFocus={() => setHovered(t)}
             onBlur={() => setHovered(null)}
             className={cn(
-              "px-3 py-1.5 rounded-full",
+              "px-4 py-2.5 rounded-full cursor-pointer",
               "bg-white/10 text-white hover:bg-white/20 transition-colors",
               "flex items-center gap-2 transition-transform duration-200 will-change-transform",
               hovered && hovered.name === t.name
@@ -406,10 +406,10 @@ export default function SkillSpectrum({
             <Image
               src={`/tech/${t.name.toLowerCase()}.svg`}
               alt={t.name}
-              width={18}
-              height={18}
+              width={25}
+              height={25}
             />
-            <span className="text-xs font-medium">{t.name}</span>
+            <span className="text-md font-medium">{t.name}</span>
           </button>
         ))}
       </div>

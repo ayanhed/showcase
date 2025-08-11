@@ -14,7 +14,7 @@ interface FooterProps {
 
 const Footer: React.FC<FooterProps> = ({ personalInfo, contactInfo }) => {
   return (
-    <footer className="py-8 px-4 sm:px-6 lg:px-8 border-t border-gray-800">
+    <footer className="py-8 px-4 sm:px-6 lg:px-8">
       <Container>
         <div className="text-center text-gray-400">
           <p className="mb-4">Copyright © 2021 - 2025 {personalInfo.name}</p>
