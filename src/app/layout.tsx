@@ -40,10 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${geistMono.variable} ${geistMono.className} antialiased bg-repeat bg-fixed`}
-        style={{
-          backgroundImage: "url(/pattern.png)",
-        }}
+        className={`${geistMono.variable} antialiased bg-gradient-to-b from-dark-bg via-dark-bg to-dark-card`}
       >
         <Navigation />
         <main className="container mx-auto pt-10 min-h-screen">{children}</main>

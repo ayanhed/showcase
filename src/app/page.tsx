@@ -12,13 +12,12 @@ import {
   Section,
   Heading,
   Button,
-  Badge,
-  Card,
   Animate,
   Stack,
   Text,
 } from "@/components/ui";
 import FeatureCard from "@/components/FeatureCard";
+import ProjectCard from "@/components/ProjectCard";
 
 export default function Home() {
   return (
@@ -91,6 +90,9 @@ export default function Home() {
         </div>
       </Section>
 
+      {/* Technologies Section - Now using our component */}
+      <TechnologiesSection technologies={skills.technologies} />
+
       {/* Recent Projects Section - Refactored */}
       <Section>
         <Animate
@@ -114,58 +116,29 @@ export default function Home() {
         </Animate>
 
         <Stack spacing="xl">
-          {projects.slice(0, 2).map((project, index) => (
+          {projects.map((project, index) => (
             <Animate
               key={project.title}
               type="slideUp"
               duration={0.8}
               delay={index * 0.2}
               once={true}
+              className="w-full"
             >
-              <Card>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  <div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <Heading level={3}>{project.title}</Heading>
-                      {project.isLatest && (
-                        <Badge variant="warning">🔥 Latest</Badge>
-                      )}
-                    </div>
-                    <Text variant="muted">{project.date}</Text>
-                    <Text variant="muted">{project.description}</Text>
-
-                    {/* Tech Stack */}
-                    <div className="flex flex-wrap gap-2 mb-6">
-                      {project.tech.map((tech) => (
-                        <Badge key={tech}>{tech}</Badge>
-                      ))}
-                    </div>
-
-                    <Button icon={ArrowRight} iconPosition="right">
-                      <Link href={project.link}>Visit website</Link>
-                    </Button>
-                  </div>
-
-                  <div className="bg-gray-800 rounded-lg p-4 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                        <span className="text-white text-2xl">🖥️</span>
-                      </div>
-                      <Text weight="semibold">Project Screenshot</Text>
-                      <Text size="sm" variant="muted">
-                        Placeholder
-                      </Text>
-                    </div>
-                  </div>
-                </div>
-              </Card>
+              <ProjectCard
+                title={project.title}
+                description={project.description}
+                date={project.date}
+                techStack={project.tech}
+                liveDemo={project.link}
+                isLatest={project.isLatest}
+                index={index}
+                image={project.projectImage}
+              />
             </Animate>
           ))}
         </Stack>
       </Section>
-
-      {/* Technologies Section - Now using our component */}
-      <TechnologiesSection technologies={skills.technologies} />
 
       {/* Contact Section - Refactored */}
       <Section>

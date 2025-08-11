@@ -40,6 +40,7 @@ export default function Projects() {
                     liveDemo={project.link}
                     isLatest={project.isLatest}
                     index={index}
+                    image={project.projectImage}
                   />
                 </Animate>
               ))}

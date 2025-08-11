@@ -7,25 +7,7 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-      },
-      fontFamily: {
-        mono: [
-          "var(--font-geist-mono)",
-          "ui-monospace",
-          "SFMono-Regular",
-          "Menlo",
-          "Monaco",
-          "Consolas",
-          "Liberation Mono",
-          "Courier New",
-          "monospace",
-        ],
-      },
-    },
+    colors: {},
   },
   plugins: [],
 };

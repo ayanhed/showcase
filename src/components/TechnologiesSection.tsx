@@ -1,16 +1,25 @@
 import React from "react";
 import Section from "./ui/Section";
 import Heading from "./ui/Heading";
-import Badge from "./ui/Badge";
-import { Animate, Grid, Stack, Text } from "./ui";
+import { Animate, Text, SkillSpectrum } from "./ui";
+
+interface TechnologyItem {
+  name: string;
+  weight: number;
+}
 
 interface TechnologiesSectionProps {
-  technologies: string[];
+  technologies: TechnologyItem[];
 }
 
 const TechnologiesSection: React.FC<TechnologiesSectionProps> = ({
   technologies,
 }) => {
+  // Prepare mapping name -> numeric value for SkillSpectrum
+  const mapping = Object.fromEntries(
+    technologies.map((t) => [t.name, t.weight])
+  );
+
   return (
     <Section>
       <Animate
@@ -33,22 +42,12 @@ const TechnologiesSection: React.FC<TechnologiesSectionProps> = ({
         </Text>
       </Animate>
 
-      <Animate type="slideUp" duration={0.8} delay={0.2} once={true}>
-        <Grid cols={6} gap="md" responsive={true}>
-          {technologies.map((tech, index) => (
-            <Animate
-              key={tech}
-              type="scale"
-              duration={0.5}
-              delay={index * 0.05}
-              once={true}
-            >
-              <Badge className="w-full text-center justify-center">
-                {tech}
-              </Badge>
-            </Animate>
-          ))}
-        </Grid>
+      <Animate type="slideUp" duration={0.8} delay={0.15} once={true}>
+        <SkillSpectrum
+          technologies={technologies.map((t) => t.name)}
+          mapping={mapping}
+          className="mb-10"
+        />
       </Animate>
 
       <Animate
