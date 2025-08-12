@@ -110,6 +110,7 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
                       {/* Enhanced Floating Animation Overlay */}
                       <div className="absolute inset-0 rounded-full bg-gradient-to-br from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:animate-pulse"></div>
                       <button
+                        id="hero-profile"
                         aria-label="Open stories"
                         onClick={() => setStoriesOpen(true)}
                         className="w-48 h-48 lg:w-64 lg:h-64 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl relative group-hover:shadow-[0_0_50px_rgba(16,185,129,0.3)] transition-all duration-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black focus:ring-purple-500"
