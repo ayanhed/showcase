@@ -28,19 +28,17 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 }) => {
   return (
     <Card className="p-0 overflow-hidden">
-      <Grid cols={2} gap="lg" responsive={true}>
-        <div className="relative overflow-hidden bg-gray-800 w-full ">
+      <Grid cols={2} gap="sm" responsive={true} className="min-h-0">
+        <div className="relative overflow-hidden bg-gray-800 w-full h-48 sm:h-64 md:h-80 lg:h-70">
           {image ? (
-            <>
-              <Image
-                src={image}
-                alt={`${title} screenshot`}
-                fill
-                sizes="(min-width: 1024px) 40vw, (min-width: 768px) 50vw, 100vw"
-                priority={Boolean(isLatest) || index === 0}
-                className="object-cover"
-              />
-            </>
+            <Image
+              src={image}
+              alt={`${title} screenshot`}
+              fill
+              sizes="(min-width: 1024px) 40vw, (min-width: 768px) 50vw, 100vw"
+              priority={Boolean(isLatest) || index === 0}
+              className="object-cover transition-transform duration-300 hover:scale-105"
+            />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
@@ -55,22 +53,33 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             </div>
           )}
         </div>
-        <Stack spacing="md" className="p-6">
+        <Stack spacing="md" className="p-4 sm:p-6 flex-1 min-w-0">
           <Stack direction="horizontal" spacing="sm" align="center">
             {slug ? (
               <NextLink href={`/projects/${slug}`} className="hover:underline">
-                <Heading level={3}>{title}</Heading>
+                <Heading level={3} className="text-lg sm:text-xl lg:text-2xl">
+                  {title}
+                </Heading>
               </NextLink>
             ) : (
-              <Heading level={3}>{title}</Heading>
+              <Heading level={3} className="text-lg sm:text-xl lg:text-2xl">
+                {title}
+              </Heading>
             )}
           </Stack>
-          <Text variant="muted">{description}</Text>
+          <Text variant="muted" className="text-sm sm:text-base">
+            {description}
+          </Text>
 
-          <Stack direction="horizontal" spacing="md">
+          <Stack direction="horizontal" spacing="md" className="mt-auto">
             {slug && (
               <NextLink href={`/projects/${slug}`}>
-                <Button icon={ArrowRight} iconPosition="right">
+                <Button
+                  icon={ArrowRight}
+                  iconPosition="right"
+                  size="sm"
+                  className="text-sm"
+                >
                   Read more
                 </Button>
               </NextLink>

@@ -31,8 +31,8 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Left Side */}
           <Animate type="slideLeft" duration={0.8} once={true}>
-            <Heading level={2} className="mb-6">
-              About me.
+            <Heading level={2} className="mb-6" showDot>
+              About me
             </Heading>
             <Text size="lg" variant="muted">
               I have been coding for over 8 years, beginning my journey in 2016.
@@ -103,8 +103,8 @@ export default function Home() {
           once={true}
           className="text-center mb-12"
         >
-          <Heading level={2} className="mb-4">
-            Recent Projects.
+          <Heading level={2} className="mb-4" showDot>
+            Recent Projects
           </Heading>
           <Text
             size="lg"
@@ -148,8 +148,8 @@ export default function Home() {
           once={true}
           className="text-center mb-12"
         >
-          <Heading level={2} className="mb-4">
-            Contact me.
+          <Heading level={2} className="mb-4" showDot>
+            Contact me
           </Heading>
           <Text
             size="lg"

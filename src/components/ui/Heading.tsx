@@ -1,14 +1,16 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {
   level?: 1 | 2 | 3 | 4 | 5 | 6;
   children: React.ReactNode;
   as?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+  showDot?: boolean;
 }
 
 const Heading = React.forwardRef<HTMLHeadingElement, HeadingProps>(
-  ({ className, level = 2, as, children, ...props }, ref) => {
+  ({ className, level = 2, as, children, showDot = false, ...props }, ref) => {
     const Component =
       as || (`h${level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6");
 
@@ -28,7 +30,28 @@ const Heading = React.forwardRef<HTMLHeadingElement, HeadingProps>(
         className: cn("text-white", sizes[level], className),
         ...props,
       },
-      children
+      showDot ? (
+        <>
+          {children}
+          <motion.span
+            aria-hidden="true"
+            className="text-purple-500"
+            animate={{ opacity: [1, 1, 0, 0] }}
+            transition={{
+              opacity: {
+                duration: 1,
+                repeat: Infinity,
+                ease: "linear",
+                times: [0, 0.7, 0.7, 1],
+              },
+            }}
+          >
+            .
+          </motion.span>
+        </>
+      ) : (
+        children
+      )
     );
   }
 );

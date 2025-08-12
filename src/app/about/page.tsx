@@ -90,7 +90,7 @@ export default function About() {
             once={true}
             className="text-center mb-12"
           >
-            <Heading level={2} className="mb-4">
+            <Heading level={2} className="mb-4" showDot>
               Experience
             </Heading>
             <Text
@@ -168,7 +168,7 @@ export default function About() {
             once={true}
             className="text-center mb-12"
           >
-            <Heading level={2} className="mb-4">
+            <Heading level={2} className="mb-4" showDot>
               Education
             </Heading>
             <Text
@@ -205,7 +205,7 @@ export default function About() {
             once={true}
             className="text-center mb-12"
           >
-            <Heading level={2} className="mb-4">
+            <Heading level={2} className="mb-4" showDot>
               Languages
             </Heading>
             <Text

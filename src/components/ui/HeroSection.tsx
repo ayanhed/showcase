@@ -26,7 +26,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center"
         >
-          <Heading level={1} className="mb-6">
+          <Heading level={1} className="mb-6" showDot>
             {title}
           </Heading>
           {subtitle && (

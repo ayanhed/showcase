@@ -23,7 +23,7 @@ export default function Projects() {
       {/* Projects Grid */}
       <Section>
         <Container>
-          <Stack spacing="xl">
+          <Stack spacing="xl" className="space-y-8">
             {projects.map((project, index) => (
               <Animate
                 key={project.title}

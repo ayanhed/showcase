@@ -34,6 +34,7 @@ export const personalInfo = {
   phone: "+44 7828724419",
   website: "ayanhedayati.com",
   github: "ayanhedayat",
+  profileImage: "/profile.jpg", // Add profile image path - replace with actual JPG when available
   about:
     "Full Stack Developer with a designer's eye and a maker's mindset. Building software that feels as good as it works.",
   mission: "Build beautifully, think deeply, and stay true to what's right.",

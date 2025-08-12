@@ -23,18 +23,17 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
               <Image
                 src="/hero-image.jpg"
                 alt="Hero background"
-                objectPosition="top"
                 fill
-                className="object-cover rounded-3xl opacity-65"
+                className="object-cover rounded-3xl opacity-65 lg:object-top object-bottom blur-xs"
                 priority
               />
             </Animate>
           </div>
 
-          <div className="bg-gradient-to-br from-black via-black/50 to-black/20 rounded-3xl p-8 lg:p-12 relative z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          <div className="bg-gradient-to-br from-black via-black/50 to-black/20 rounded-3xl p-5 lg:p-12 relative z-10">
+            <div className="flex flex-col lg:flex-row gap-10 items-center">
               {/* Left Side - Content */}
-              <div className="space-y-8">
+              <div className="space-y-8 order-2 lg:order-1 flex-1">
                 {/* About Me Section */}
                 <Animate type="slideRight" duration={0.6} delay={0.4}>
                   <div className="space-y-4">
@@ -42,7 +41,7 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
                       level={1}
                       className="text-white text-4xl lg:text-5xl font-bold"
                     >
-                      hey, I&apos;m {personalInfo.name.split(" ")[0]} 👋
+                      hi, I&apos;m {personalInfo.name.split(" ")[0]} 👋
                     </Heading>
 
                     <Text
@@ -79,6 +78,47 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
                     <Text size="md" variant="muted" className="italic">
                       Keep moving, don&apos;t settle. 🚀
                     </Text>
+                  </div>
+                </Animate>
+              </div>
+
+              {/* Right Side - Profile Image */}
+              <div className="flex justify-center order-1 lg:order-2 flex-1">
+                <Animate type="scale" duration={0.8} delay={0.8}>
+                  <div className="relative group hover:animate-glow">
+                    {/* Prominent Glow Effect - Behind Image */}
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-green-400/40 via-purple-500/40 to-pink-500/40 blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-1000 group-hover:scale-110 -z-10"></div>
+
+                    {/* Additional Animated Glow Rings - Behind Image */}
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-green-400/20 via-purple-500/20 to-pink-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-all duration-1200 group-hover:scale-125 animate-pulse -z-20"></div>
+
+                    {/* Enhanced Gradient Border with Stronger Glow */}
+                    <div className="absolute -inset-2 bg-gradient-to-r from-green-400 via-purple-500 to-pink-500 rounded-full blur-md opacity-90 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse -z-30"></div>
+
+                    {/* Additional Outer Glow Layer */}
+                    <div className="absolute -inset-4 bg-gradient-to-r from-green-400/30 via-purple-500/30 to-pink-500/30 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition duration-1500 group-hover:duration-300 -z-40"></div>
+
+                    {/* Profile Image Container with Fade Effect */}
+                    <div className="relative z-10">
+                      <div className="w-48 h-48 lg:w-64 lg:h-64 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl relative group-hover:shadow-[0_0_50px_rgba(16,185,129,0.3)] transition-all duration-700">
+                        {/* Base Image */}
+                        <Image
+                          src={personalInfo.profileImage || "/profile.jpg"}
+                          alt={`${personalInfo.name} profile`}
+                          width={320}
+                          height={320}
+                          className="object-cover w-full h-full transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
+                          priority
+                          onError={(e) => {
+                            // Fallback to simple SVG if image fails to load
+                            const target = e.target as HTMLImageElement;
+                            target.src = "/profile.jpg";
+                          }}
+                        />
+                      </div>
+                      {/* Enhanced Floating Animation Overlay */}
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:animate-pulse"></div>
+                    </div>
                   </div>
                 </Animate>
               </div>

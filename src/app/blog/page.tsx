@@ -17,7 +17,7 @@ export default function Blog() {
     <div id="blog">
       {/* Hero Section */}
       <HeroSection
-        title="Tech Blog."
+        title="Tech Blog"
         subtitle="A blog about technology, programming, and various intriguing topics. Here I share my experiences, projects and opinions."
       />
 
@@ -31,8 +31,8 @@ export default function Blog() {
             once={true}
             className="mb-8"
           >
-            <Heading level={2} className="mb-6">
-              All Posts.
+            <Heading level={2} className="mb-6" showDot>
+              All Posts
             </Heading>
           </Animate>
 

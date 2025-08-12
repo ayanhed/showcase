@@ -28,8 +28,8 @@ const TechnologiesSection: React.FC<TechnologiesSectionProps> = ({
         once={true}
         className="text-center mb-12"
       >
-        <Heading level={2} className="mb-4">
-          Technologies I use.
+        <Heading level={2} className="mb-4" showDot>
+          Technologies I use
         </Heading>
         <Text
           size="lg"

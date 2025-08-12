@@ -40,7 +40,7 @@ export default function Contact() {
     <div id="contact">
       {/* Hero Section */}
       <HeroSection
-        title="Contact me."
+        title="Contact me"
         subtitle="I'm always eager to explore new opportunities and take on exciting projects. If you have a project in mind, or just want to say hi, feel free to send me a message."
       />
 

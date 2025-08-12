@@ -29,7 +29,7 @@ export default function Navigation() {
     <nav className="fixed top-0 bg-dark-bg/80 backdrop-blur-md z-50 w-full ">
       <div className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center h-16 container mx-auto px-4">
         {/* Logo */}
-        <Link href="/" className="text-xl font-bold text-white col-start-1">
+        <Link href="/" className="text-3xl font-bold text-white col-start-1">
           AH
           <motion.span
             aria-hidden="true"
@@ -96,7 +96,7 @@ export default function Navigation() {
                 whileHover={{ scale: 1.08, y: -1 }}
                 whileTap={{ scale: 0.96 }}
               >
-                <Icon size={18} />
+                <Icon size={25} />
               </motion.a>
             ))}
           </div>
@@ -107,7 +107,7 @@ export default function Navigation() {
             className="md:hidden p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 transition-colors duration-200"
             aria-label="Toggle navigation menu"
           >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
+            {isOpen ? <X size={30} /> : <Menu size={35} />}
           </button>
         </div>
       </div>
