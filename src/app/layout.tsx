@@ -109,7 +109,7 @@ export default function RootLayout({
             returnDuration={1.5}
           />
         </div>
-        <main className="container mx-auto pt-10 min-h-screen">
+        <main className="container mx-auto pt-10 min-h-[100dvh]">
           <Providers>{children}</Providers>
         </main>
         <Footer personalInfo={personalInfo} contactInfo={contactInfo} />

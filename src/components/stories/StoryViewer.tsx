@@ -233,7 +233,7 @@ export default function StoryViewer({
             // Mobile: full screen
             "min-h-screen md:min-h-0 h-[100dvh]",
             // Desktop: rounded modal
-            "md:max-w-[420px] md:h-[80vh] md:max-h-[820px] md:rounded-xl md:border md:border-white/10 md:shadow-2xl",
+            "md:max-w-[420px] md:h-[80dvh] md:max-h-[820px] md:rounded-xl md:border md:border-white/10 md:shadow-2xl",
             // Entry/Exit animations
             "transition-all duration-300 ease-out",
             isVisible && !isExiting

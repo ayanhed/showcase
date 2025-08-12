@@ -35,7 +35,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               src={image}
               alt={`${title} screenshot`}
               fill
-              sizes="(min-width: 1024px) 40vw, (min-width: 768px) 50vw, 100vw"
+              sizes="(min-width: 1024px) 40dvw, (min-width: 768px) 50dvw, 100dvw"
               priority={Boolean(isLatest) || index === 0}
               className="object-cover transition-transform duration-300 hover:scale-105"
             />

@@ -22,7 +22,7 @@ export default function ProjectPage() {
               src={project.projectImage}
               alt={`${project.title} screenshot`}
               fill
-              sizes="100vw"
+              sizes="100dvw"
               className="object-cover"
               priority
             />
@@ -57,7 +57,7 @@ export default function ProjectPage() {
               src={project.projectImage}
               alt={`${project.title} screenshot`}
               fill
-              sizes="(min-width: 1024px) 40vw, (min-width: 768px) 50vw, 100vw"
+              sizes="(min-width: 1024px) 40dvw, (min-width: 768px) 50dvw, 100dvw"
               className="object-cover"
               priority
             />
