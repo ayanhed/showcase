@@ -13,10 +13,6 @@ interface ProjectCardProps {
   title: string;
   slug?: string;
   description: string;
-  date: string;
-  liveDemo?: string;
-  github?: string;
-  caseStudy?: string;
   image?: string;
   isLatest?: boolean;
   index: number;
@@ -26,10 +22,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   title,
   slug,
   description,
-  date,
-  liveDemo,
-  github,
-  caseStudy,
   image,
   isLatest,
   index,

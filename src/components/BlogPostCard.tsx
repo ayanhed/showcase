@@ -18,7 +18,7 @@ interface BlogPostCardProps {
   index: number;
 }
 
-const BlogPostCard: React.FC<BlogPostCardProps> = ({ post, index }) => {
+const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
   return (
     <article className="hover:bg-gray-800/50 transition-colors duration-300">
       <Card>

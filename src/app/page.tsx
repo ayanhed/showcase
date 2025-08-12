@@ -1,13 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowRight,
-  Github,
-  Linkedin,
-  Mail,
-  MessageCircle,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { personalInfo, skills, projects, contactInfo } from "@/lib/data";
 
 // Import our new components
@@ -137,8 +131,6 @@ export default function Home() {
                 title={project.title}
                 slug={project.slug}
                 description={project.description}
-                date={project.date}
-                liveDemo={project.link}
                 isLatest={project.isLatest}
                 index={index}
                 image={project.projectImage}

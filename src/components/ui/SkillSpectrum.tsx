@@ -164,11 +164,6 @@ export default function SkillSpectrum({
       )
     : 0;
 
-  // Animation helpers
-  const spring = prefersReducedMotion
-    ? { duration: 0 }
-    : ({ type: "spring", stiffness: 200, damping: 24, mass: 0.6 } as const);
-
   return (
     <div ref={containerRef} className={cn("w-full relative", className)}>
       <motion.svg
@@ -317,7 +312,6 @@ export default function SkillSpectrum({
 
             {/* Dots */}
             {visibleTech.map((d) => {
-              const isDimmed = hovered && hovered.name !== d.name;
               const isHovered = hovered && hovered.name === d.name;
               return (
                 <circle

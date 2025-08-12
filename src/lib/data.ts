@@ -20,9 +20,15 @@ export interface Project {
   projectImage?: string;
 }
 
+export const theme = {
+  primary: "#ad46ff",
+  background: "#1A1A1A",
+};
+
 export const personalInfo = {
   name: "Ayan Hedayati",
   title: "Senior Full Stack Developer",
+  shortAppName: "AH.",
   location: "Birmingham, UK",
   email: "ayanhedaya0@gmail.com",
   phone: "+44 7828724419",
