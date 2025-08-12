@@ -3,7 +3,7 @@ import Card from "./ui/Card";
 import Input from "./ui/Input";
 import Textarea from "./ui/Textarea";
 import Button from "./ui/Button";
-import { Animate, Grid, Stack, Text } from "./ui";
+import { Animate, Grid, Stack } from "./ui";
 
 interface ContactFormProps {
   className?: string;

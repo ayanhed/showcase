@@ -36,8 +36,6 @@ export default function Projects() {
                   title={project.title}
                   slug={project.slug}
                   description={project.description}
-                  date={project.date}
-                  liveDemo={project.link}
                   isLatest={project.isLatest}
                   index={index}
                   image={project.projectImage}

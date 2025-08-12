@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, MessageCircle, Github } from "lucide-react";
-import { contactInfo } from "@/lib/data";
 import {
   Section,
   Button,
@@ -13,7 +11,6 @@ import {
   Animate,
   Grid,
   Stack,
-  Text,
 } from "@/components/ui";
 import ContactQuickLinks from "@/components/ContactQuickLinks";
 
