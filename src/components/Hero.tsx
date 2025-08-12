@@ -7,9 +7,11 @@ import Heading from "./ui/Heading";
 import Badge from "./ui/Badge";
 import Text from "./ui/Text";
 import Animate from "./ui/Animate";
+import Icon from "./ui/Icon";
 import { personalInfo } from "@/lib/data";
- import { StoryViewer } from "@/components/stories";
- import { stories as defaultStories } from "@/lib/data";
+import { StoryViewer } from "@/components/stories";
+import { stories as defaultStories } from "@/lib/data";
+import { MapPin } from "lucide-react";
 
 interface HeroProps {
   personalInfo: typeof personalInfo;
@@ -46,7 +48,7 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
                       level={1}
                       className="text-white text-4xl lg:text-5xl font-bold"
                     >
-                      hi, I&apos;m {personalInfo.name.split(" ")[0]} 👋
+                      Hi, I&apos;m {personalInfo.name.split(" ")[0]} 👋
                     </Heading>
 
                     <Text
@@ -105,6 +107,8 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
 
                     {/* Profile Image Container with Fade Effect */}
                     <div className="relative z-10">
+                      {/* Enhanced Floating Animation Overlay */}
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:animate-pulse"></div>
                       <button
                         aria-label="Open stories"
                         onClick={() => setStoriesOpen(true)}
@@ -125,8 +129,25 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
                           }}
                         />
                       </button>
-                      {/* Enhanced Floating Animation Overlay */}
-                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:animate-pulse"></div>
+
+                      {/* Floating Badge - Working Remotely */}
+                      <Animate type="slideUp" duration={0.8} delay={0.8}>
+                        <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 z-20 transition-all duration-700 group-hover:scale-110 group-hover:-translate-y-1">
+                          <div className="flex items-center justify-center gap-2 px-3 py-2 lg:px-4 lg:py-2.5 rounded-full backdrop-blur-md border border-white/20 shadow-lg shadow-black/25 transition-all duration-700 group-hover:shadow-xl group-hover:shadow-black/30 group-hover:bg-white/15 group-hover:border-white/30">
+                            <Icon
+                              icon={MapPin}
+                              size="sm"
+                              className="text-green-400 group-hover:text-green-300 transition-colors duration-700"
+                            />
+                            <Text
+                              size="sm"
+                              className="text-white/90 m-0 font-medium whitespace-nowrap group-hover:text-white transition-colors duration-700"
+                            >
+                              {personalInfo.location}
+                            </Text>
+                          </div>
+                        </div>
+                      </Animate>
                     </div>
                   </div>
                 </Animate>

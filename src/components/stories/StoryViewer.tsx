@@ -1,6 +1,13 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import Image from "next/image";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { personalInfo } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -37,6 +44,8 @@ export default function StoryViewer({
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isPaused, setIsPaused] = useState(false);
   const [, force] = useState(0);
+  const [isExiting, setIsExiting] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const timerRef = useRef<number | null>(null);
   const progressRef = useRef<number>(0); // 0..1 for current story
@@ -44,6 +53,25 @@ export default function StoryViewer({
   const current = stories[currentIndex];
 
   const canShow = isOpen && stories.length > 0;
+
+  // Handle entry animation
+  useEffect(() => {
+    if (canShow) {
+      setIsVisible(true);
+      setIsExiting(false);
+    } else {
+      setIsVisible(false);
+    }
+  }, [canShow]);
+
+  // Handle exit animation
+  const handleClose = useCallback(() => {
+    setIsExiting(true);
+    setTimeout(() => {
+      onClose();
+      setIsExiting(false);
+    }, 300); // Match animation duration
+  }, [onClose]);
 
   const resetTimer = useCallback(() => {
     if (timerRef.current) {
@@ -57,9 +85,9 @@ export default function StoryViewer({
     if (currentIndex < stories.length - 1) {
       setCurrentIndex((i) => i + 1);
     } else {
-      onClose();
+      handleClose();
     }
-  }, [currentIndex, stories.length, onClose, resetTimer]);
+  }, [currentIndex, stories.length, handleClose, resetTimer]);
 
   const goPrev = useCallback(() => {
     resetTimer();
@@ -72,13 +100,13 @@ export default function StoryViewer({
   useEffect(() => {
     if (!canShow) return;
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") handleClose();
       if (e.key === "ArrowRight") goNext();
       if (e.key === "ArrowLeft") goPrev();
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [canShow, onClose, goNext, goPrev]);
+  }, [canShow, handleClose, goNext, goPrev]);
 
   // Manage timers/progress for image/text
   useEffect(() => {
@@ -109,7 +137,14 @@ export default function StoryViewer({
     return () => {
       resetTimer();
     };
-  }, [canShow, current?.type, current?.durationMs, goNext, isPaused, resetTimer]);
+  }, [
+    canShow,
+    current?.type,
+    current?.durationMs,
+    goNext,
+    isPaused,
+    resetTimer,
+  ]);
 
   // Pause/resume helpers
   const pause = useCallback(() => setIsPaused(true), []);
@@ -172,25 +207,38 @@ export default function StoryViewer({
     });
   }, [stories, currentIndex]);
 
-  if (!canShow) return null;
+  // Don't render if not open and not exiting
+  if (!isOpen && !isExiting) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
+      className={cn(
+        "fixed inset-0 z-50 flex items-center justify-center",
+        "transition-opacity duration-300 ease-out",
+        isVisible && !isExiting ? "opacity-100" : "opacity-0"
+      )}
       aria-modal="true"
       role="dialog"
     >
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-        onClick={onClose}
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm md:block hidden"
+        onClick={handleClose}
       />
 
       {/* Viewer frame */}
       <div
         className={cn(
-          "relative z-10 w-full max-w-[420px] h-[80vh] max-h-[820px] bg-black rounded-xl overflow-hidden",
-          "border border-white/10 shadow-2xl"
+          "relative z-10 w-full bg-black overflow-hidden",
+          // Mobile: full screen
+          "h-screen",
+          // Desktop: rounded modal
+          "md:max-w-[420px] md:h-[80vh] md:max-h-[820px] md:rounded-xl md:border md:border-white/10 md:shadow-2xl",
+          // Entry/Exit animations
+          "transition-all duration-300 ease-out",
+          isVisible && !isExiting
+            ? "opacity-100 scale-100 translate-y-0"
+            : "opacity-0 scale-95 translate-y-2"
         )}
         onMouseDown={pause}
         onMouseUp={resume}
@@ -199,9 +247,12 @@ export default function StoryViewer({
         onTouchEnd={resume}
       >
         {/* Progress bars */}
-        <div className="absolute top-3 left-3 right-3 z-20 flex gap-1">
+        <div className="absolute top-3 md:top-3 left-3 right-3 z-20 flex gap-1 pt-safe-top md:pt-0">
           {segments.map((p, idx) => (
-            <div key={idx} className="h-1 flex-1 bg-white/20 rounded-full overflow-hidden">
+            <div
+              key={idx}
+              className="h-1 flex-1 bg-white/20 rounded-full overflow-hidden"
+            >
               <div
                 className="h-full bg-white rounded-full transition-[width] duration-150"
                 style={{ width: `${Math.max(0, Math.min(1, p)) * 100}%` }}
@@ -211,11 +262,13 @@ export default function StoryViewer({
         </div>
 
         {/* Header: avatar + name + close */}
-        <div className="absolute top-6 left-3 right-3 z-20 flex items-center justify-between">
+        <div className="absolute top-6 md:top-6 left-3 right-3 z-20 flex items-center justify-between pt-safe-top md:pt-0">
           <div className="flex items-center gap-3">
-            <img
+            <Image
               src={author.avatar}
               alt={author.name}
+              width={32}
+              height={32}
               className="w-8 h-8 rounded-full border border-white/20 object-cover"
             />
             <div className="text-white text-sm font-semibold drop-shadow-sm">
@@ -225,7 +278,7 @@ export default function StoryViewer({
           <button
             aria-label="Close"
             className="text-white/90 hover:text-white"
-            onClick={onClose}
+            onClick={handleClose}
           >
             <X className="w-6 h-6" />
           </button>
@@ -277,7 +330,7 @@ export default function StoryViewer({
 
         {/* CTA */}
         {current?.cta && (
-          <div className="absolute bottom-6 left-0 right-0 flex justify-center z-20">
+          <div className="absolute bottom-6 md:bottom-6 left-0 right-0 flex justify-center z-20 pb-safe-bottom md:pb-0">
             <Button as="a" href={current.cta.href} variant="primary" size="md">
               {current.cta.label}
             </Button>

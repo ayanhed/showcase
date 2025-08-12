@@ -7,6 +7,7 @@ import { contactInfo, personalInfo } from "../lib/data";
 import Footer from "../components/Footer";
 import * as data from "@/lib/data";
 import Providers from "./providers";
+import DotGrid from "../components/ui/DotGrid";
 
 const geistMono = Geist_Mono({
   subsets: ["latin"],
@@ -54,6 +55,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: data.theme.background,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -74,23 +76,39 @@ export default function RootLayout({
                 console.log('Attempting to register service worker...');
                 // Try with explicit scope
                 navigator.serviceWorker.register('/sw.js', { scope: '/' })
-                  .catch(function(err) {
-                    console.log('First attempt failed, trying without scope...');
-                    return navigator.serviceWorker.register('/sw.js');
+                .catch(function(err) {
+                  console.log('First attempt failed, trying without scope...');
+                  return navigator.serviceWorker.register('/sw.js');
                   })
                   .then(function(registration) {
                     console.log('ServiceWorker registration successful:', registration);
-                  })
-                  .catch(function (err) {
-                    console.error('ServiceWorker registration failed:', err);
-                    console.error('Error details:', err.message, err.stack);
-                  });
-              });
-            }
-          `,
+                    })
+                    .catch(function (err) {
+                      console.error('ServiceWorker registration failed:', err);
+                      console.error('Error details:', err.message, err.stack);
+                      });
+                      });
+                      }
+                      `,
           }}
         />
         <Navigation />
+        <div
+          style={{ width: "100dvw", height: "100dvh", position: "fixed" }}
+          className="bg-gradient-to-b  -z-20 opacity-50"
+        >
+          <DotGrid
+            dotSize={2}
+            gap={50}
+            baseColor="#2a2a2a"
+            activeColor={data.theme.primary}
+            proximity={130}
+            shockRadius={200}
+            shockStrength={5}
+            resistance={750}
+            returnDuration={1.5}
+          />
+        </div>
         <main className="container mx-auto pt-10 min-h-screen">
           <Providers>{children}</Providers>
         </main>
