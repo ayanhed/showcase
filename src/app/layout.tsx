@@ -71,9 +71,20 @@ export default function RootLayout({
             __html: `
             if ('serviceWorker' in navigator) {
               window.addEventListener('load', function () {
-                navigator.serviceWorker.register('/sw.js').catch(function (err) {
-                  console.error('ServiceWorker registration failed:', err);
-                });
+                console.log('Attempting to register service worker...');
+                // Try with explicit scope
+                navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                  .catch(function(err) {
+                    console.log('First attempt failed, trying without scope...');
+                    return navigator.serviceWorker.register('/sw.js');
+                  })
+                  .then(function(registration) {
+                    console.log('ServiceWorker registration successful:', registration);
+                  })
+                  .catch(function (err) {
+                    console.error('ServiceWorker registration failed:', err);
+                    console.error('Error details:', err.message, err.stack);
+                  });
               });
             }
           `,
