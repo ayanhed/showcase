@@ -19,21 +19,35 @@ const navItems = [
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const isHome = pathname === "/";
 
   // Scroll-driven mini avatar next to logo
-  const [slideProgress, setSlideProgress] = useState(0); // 0 = hidden left, 1 = fully visible next to logo
+  const [slideProgress, setSlideProgress] = useState<number>(() => {
+    if (typeof window === "undefined") return isHome ? 0 : 1;
+    if (!isHome) return 1;
+    const start = 24; // px from top to start revealing
+    const end = 320; // px from top to be fully revealed
+    const raw = (window.scrollY - start) / (end - start);
+    return Math.min(1, Math.max(0, raw));
+  });
 
   useEffect(() => {
     let rafId: number | null = null;
     let snapRafId: number | null = null;
 
-    const heroEl = document.getElementById("hero-profile");
-    if (!heroEl) return; // Only run on pages that contain the hero
+    if (!isHome) {
+      // Always show fully on non-home routes without animation
+      setSlideProgress(1);
+      return () => {
+        if (rafId) cancelAnimationFrame(rafId);
+        if (snapRafId) cancelAnimationFrame(snapRafId);
+      };
+    }
 
-    let lastTop = 0;
+    let lastY = window.scrollY;
     let stillFrames = 0;
     let snapping = false;
-    let progress = 0;
+    let progress = slideProgress;
 
     const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
@@ -62,35 +76,25 @@ export default function Navigation() {
     };
 
     const update = () => {
-      const rect = heroEl.getBoundingClientRect();
-      const avatarHeight = Math.max(1, rect.height || 1);
+      const y = window.scrollY;
+      const start = 24; // start revealing just after top
+      const end = 320; // fully revealed at 320px scrolled
+      const raw = Math.min(1, Math.max(0, (y - start) / (end - start)));
 
-      // Map top position to [0..1] visibility
-      const start = 24; // start revealing when top is 24px from viewport top
-      const end = -avatarHeight; // fully revealed once the avatar has completely left viewport
-      const raw = Math.min(1, Math.max(0, (start - rect.top) / (start - end)));
-
-      // Detect scrolling velocity via change in rect.top
-      const deltaTop = rect.top - lastTop;
-      lastTop = rect.top;
-      const isMoving = Math.abs(deltaTop) > 0.5;
+      const deltaY = y - lastY;
+      lastY = y;
+      const isMoving = Math.abs(deltaY) > 0.5;
 
       if (isMoving) {
         stillFrames = 0;
-        if (snapping) {
-          // cancel current snap animation
-          snapping = false;
-        }
+        if (snapping) snapping = false; // cancel snap
         progress = raw;
         setSlideProgress(progress);
       } else {
         stillFrames += 1;
-        // After ~200ms of idleness (12 frames at 60fps), snap to nearest end if mid-state
         if (!snapping && raw > 0 && raw < 1 && stillFrames >= 12) {
           const target = raw < 0.5 ? 0 : 1;
-          if (Math.abs(progress - target) > 0.001) {
-            animateSnap(target);
-          }
+          if (Math.abs(progress - target) > 0.001) animateSnap(target);
         }
       }
 
@@ -102,7 +106,7 @@ export default function Navigation() {
       if (rafId) cancelAnimationFrame(rafId);
       if (snapRafId) cancelAnimationFrame(snapRafId);
     };
-  }, []);
+  }, [isHome]);
 
   const socials = [
     { href: contactInfo.github, label: "GitHub", Icon: Github },
@@ -121,7 +125,7 @@ export default function Navigation() {
             className="relative h-8 overflow-hidden"
             style={{
               width: `${32 * slideProgress}px`,
-              transition: "width 120ms linear",
+              transition: isHome ? "width 120ms linear" : undefined,
             }}
           >
             <div
@@ -129,7 +133,7 @@ export default function Navigation() {
               style={{
                 transform: `translateX(${(-12 + 12 * slideProgress)}px)`,
                 opacity: slideProgress,
-                transition: "opacity 120ms linear",
+                transition: isHome ? "opacity 120ms linear" : "none",
               }}
             >
               <Image
