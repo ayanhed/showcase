@@ -249,8 +249,10 @@ export default function StoryViewer({
               src={current.src}
               className="w-full h-full object-contain"
               playsInline
-              muted={false}
+              muted={true}
               controls={false}
+              preload="metadata"
+              crossOrigin="anonymous"
               onTimeUpdate={handleTimeUpdate}
               onEnded={handleVideoEnded}
               onPlay={() => setIsPaused(false)}

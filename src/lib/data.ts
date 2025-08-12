@@ -286,7 +286,7 @@ export const stories = [
   {
     id: "s3",
     type: "video",
-    src: "/stories/demo.mp4",
+    src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
     cta: { label: "Contact me", href: "/contact" },
   },
 ] as const;
