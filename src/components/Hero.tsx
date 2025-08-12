@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import Section from "./ui/Section";
@@ -5,13 +7,18 @@ import Heading from "./ui/Heading";
 import Badge from "./ui/Badge";
 import Text from "./ui/Text";
 import Animate from "./ui/Animate";
+import Icon from "./ui/Icon";
 import { personalInfo } from "@/lib/data";
+import { StoryViewer } from "@/components/stories";
+import { stories as defaultStories } from "@/lib/data";
+import { MapPin } from "lucide-react";
 
 interface HeroProps {
   personalInfo: typeof personalInfo;
 }
 
 const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
+  const [isStoriesOpen, setStoriesOpen] = React.useState(false);
   return (
     <Section spacing="lg">
       {/* Main Gradient Card */}
@@ -41,7 +48,7 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
                       level={1}
                       className="text-white text-4xl lg:text-5xl font-bold"
                     >
-                      hi, I&apos;m {personalInfo.name.split(" ")[0]} 👋
+                      Hi, I&apos;m {personalInfo.name.split(" ")[0]} 👋
                     </Heading>
 
                     <Text
@@ -100,7 +107,13 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
 
                     {/* Profile Image Container with Fade Effect */}
                     <div className="relative z-10">
-                      <div className="w-48 h-48 lg:w-64 lg:h-64 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl relative group-hover:shadow-[0_0_50px_rgba(16,185,129,0.3)] transition-all duration-700">
+                      {/* Enhanced Floating Animation Overlay */}
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:animate-pulse"></div>
+                      <button
+                        aria-label="Open stories"
+                        onClick={() => setStoriesOpen(true)}
+                        className="w-48 h-48 lg:w-64 lg:h-64 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl relative group-hover:shadow-[0_0_50px_rgba(16,185,129,0.3)] transition-all duration-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black focus:ring-purple-500"
+                      >
                         {/* Base Image */}
                         <Image
                           src={personalInfo.profileImage || "/profile.jpg"}
@@ -115,9 +128,26 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
                             target.src = "/profile.jpg";
                           }}
                         />
-                      </div>
-                      {/* Enhanced Floating Animation Overlay */}
-                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:animate-pulse"></div>
+                      </button>
+
+                      {/* Floating Badge - Working Remotely */}
+                      <Animate type="slideUp" duration={0.8} delay={0.8}>
+                        <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 z-20 transition-all duration-700 group-hover:scale-110 group-hover:-translate-y-1">
+                          <div className="flex items-center justify-center gap-2 px-3 py-2 lg:px-4 lg:py-2.5 rounded-full backdrop-blur-md border border-white/20 shadow-lg shadow-black/25 transition-all duration-700 group-hover:shadow-xl group-hover:shadow-black/30 group-hover:bg-white/15 group-hover:border-white/30">
+                            <Icon
+                              icon={MapPin}
+                              size="sm"
+                              className="text-green-400 group-hover:text-green-300 transition-colors duration-700"
+                            />
+                            <Text
+                              size="sm"
+                              className="text-white/90 m-0 font-medium whitespace-nowrap group-hover:text-white transition-colors duration-700"
+                            >
+                              {personalInfo.location}
+                            </Text>
+                          </div>
+                        </div>
+                      </Animate>
                     </div>
                   </div>
                 </Animate>
@@ -126,6 +156,12 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
           </div>
         </div>
       </Animate>
+      <StoryViewer
+        isOpen={isStoriesOpen}
+        onClose={() => setStoriesOpen(false)}
+        stories={defaultStories}
+        author={{ name: personalInfo.name, avatar: personalInfo.profileImage }}
+      />
     </Section>
   );
 };
