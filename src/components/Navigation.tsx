@@ -25,21 +25,74 @@ export default function Navigation() {
 
   useEffect(() => {
     let rafId: number | null = null;
+    let snapRafId: number | null = null;
 
     const heroEl = document.getElementById("hero-profile");
     if (!heroEl) return; // Only run on pages that contain the hero
+
+    let lastTop = 0;
+    let stillFrames = 0;
+    let snapping = false;
+    let progress = 0;
+
+    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
+    const animateSnap = (to: number) => {
+      snapping = true;
+      const from = progress;
+      const durationMs = 180;
+      let startTs: number | null = null;
+
+      const step = (ts: number) => {
+        if (startTs === null) startTs = ts;
+        const t = Math.min(1, (ts - startTs) / durationMs);
+        const eased = easeOutCubic(t);
+        progress = from + (to - from) * eased;
+        setSlideProgress(progress);
+        if (t < 1 && snapping) {
+          snapRafId = window.requestAnimationFrame(step);
+        } else {
+          progress = to;
+          setSlideProgress(progress);
+          snapping = false;
+        }
+      };
+
+      snapRafId = window.requestAnimationFrame(step);
+    };
 
     const update = () => {
       const rect = heroEl.getBoundingClientRect();
       const avatarHeight = Math.max(1, rect.height || 1);
 
-      // Start revealing when the top of the hero avatar reaches 24px from the top
-      // Fully revealed when the avatar has completely left the viewport
-      const start = 24; // px from top to start the animation
-      const end = -avatarHeight; // when fully above the viewport
-      const raw = (start - rect.top) / (start - end);
-      const nextProgress = Math.min(1, Math.max(0, raw));
-      setSlideProgress(nextProgress);
+      // Map top position to [0..1] visibility
+      const start = 24; // start revealing when top is 24px from viewport top
+      const end = -avatarHeight; // fully revealed once the avatar has completely left viewport
+      const raw = Math.min(1, Math.max(0, (start - rect.top) / (start - end)));
+
+      // Detect scrolling velocity via change in rect.top
+      const deltaTop = rect.top - lastTop;
+      lastTop = rect.top;
+      const isMoving = Math.abs(deltaTop) > 0.5;
+
+      if (isMoving) {
+        stillFrames = 0;
+        if (snapping) {
+          // cancel current snap animation
+          snapping = false;
+        }
+        progress = raw;
+        setSlideProgress(progress);
+      } else {
+        stillFrames += 1;
+        // After ~200ms of idleness (12 frames at 60fps), snap to nearest end if mid-state
+        if (!snapping && raw > 0 && raw < 1 && stillFrames >= 12) {
+          const target = raw < 0.5 ? 0 : 1;
+          if (Math.abs(progress - target) > 0.001) {
+            animateSnap(target);
+          }
+        }
+      }
 
       rafId = window.requestAnimationFrame(update);
     };
@@ -47,6 +100,7 @@ export default function Navigation() {
     rafId = window.requestAnimationFrame(update);
     return () => {
       if (rafId) cancelAnimationFrame(rafId);
+      if (snapRafId) cancelAnimationFrame(snapRafId);
     };
   }, []);
 
