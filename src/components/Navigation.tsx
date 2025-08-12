@@ -60,28 +60,40 @@ export default function Navigation() {
     <nav className="fixed top-0 bg-dark-bg/80 backdrop-blur-md z-50 w-full ">
       <div className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center h-16 container mx-auto px-4">
         {/* Logo */}
-        <div className="relative flex items-center gap-2 col-start-1">
+        <div className="relative flex items-center gap-0 col-start-1">
           {/* Sliding small avatar, controlled by scroll */}
           <div
             aria-hidden
-            className="relative h-8 w-8 rounded-full overflow-hidden border border-white/20 shadow"
+            className="relative h-8 overflow-hidden"
             style={{
-              transform: `translateX(${(-12 + 12 * slideProgress)}px)`,
-              opacity: slideProgress,
-              transition: "opacity 120ms linear",
+              width: `${32 * slideProgress}px`,
+              transition: "width 120ms linear",
             }}
           >
-            <Image
-              src="/profile.jpg"
-              alt="mini avatar"
-              fill
-              sizes="32px"
-              className="object-cover"
-              priority
-            />
+            <div
+              className="relative h-8 w-8 rounded-full overflow-hidden border border-white/20 shadow"
+              style={{
+                transform: `translateX(${(-12 + 12 * slideProgress)}px)`,
+                opacity: slideProgress,
+                transition: "opacity 120ms linear",
+              }}
+            >
+              <Image
+                src="/profile.jpg"
+                alt="mini avatar"
+                fill
+                sizes="32px"
+                className="object-cover"
+                priority
+              />
+            </div>
           </div>
 
-          <Link href="/" className="text-3xl font-bold text-white">
+          <Link
+            href="/"
+            className="text-3xl font-bold text-white"
+            style={{ marginLeft: `${8 * slideProgress}px` }}
+          >
             AH
             <motion.span
               aria-hidden="true"
