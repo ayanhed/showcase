@@ -266,3 +266,27 @@ export const contactInfo = {
   linkedin: "https://www.linkedin.com/in/ayanhedayati/",
   instagram: "https://www.instagram.com/ayaanh92/",
 };
+
+export const stories = [
+  {
+    id: "s1",
+    type: "text",
+    text: "Shipping a new feature this week. Stay tuned!",
+    background: "bg-gradient-to-br from-purple-700 via-fuchsia-600 to-pink-600",
+    durationMs: 4500,
+    cta: { label: "Read blog", href: "/blog" },
+  },
+  {
+    id: "s2",
+    type: "image",
+    src: "/projects/rockafellas.png",
+    durationMs: 5000,
+    cta: { label: "Projects", href: "/projects" },
+  },
+  {
+    id: "s3",
+    type: "video",
+    src: "/stories/demo.mp4",
+    cta: { label: "Contact me", href: "/contact" },
+  },
+] as const;

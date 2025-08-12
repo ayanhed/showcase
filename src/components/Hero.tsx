@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import Section from "./ui/Section";
@@ -6,12 +8,15 @@ import Badge from "./ui/Badge";
 import Text from "./ui/Text";
 import Animate from "./ui/Animate";
 import { personalInfo } from "@/lib/data";
+ import { StoryViewer } from "@/components/stories";
+ import { stories as defaultStories } from "@/lib/data";
 
 interface HeroProps {
   personalInfo: typeof personalInfo;
 }
 
 const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
+  const [isStoriesOpen, setStoriesOpen] = React.useState(false);
   return (
     <Section spacing="lg">
       {/* Main Gradient Card */}
@@ -100,7 +105,11 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
 
                     {/* Profile Image Container with Fade Effect */}
                     <div className="relative z-10">
-                      <div className="w-48 h-48 lg:w-64 lg:h-64 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl relative group-hover:shadow-[0_0_50px_rgba(16,185,129,0.3)] transition-all duration-700">
+                      <button
+                        aria-label="Open stories"
+                        onClick={() => setStoriesOpen(true)}
+                        className="w-48 h-48 lg:w-64 lg:h-64 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl relative group-hover:shadow-[0_0_50px_rgba(16,185,129,0.3)] transition-all duration-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black focus:ring-purple-500"
+                      >
                         {/* Base Image */}
                         <Image
                           src={personalInfo.profileImage || "/profile.jpg"}
@@ -115,7 +124,7 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
                             target.src = "/profile.jpg";
                           }}
                         />
-                      </div>
+                      </button>
                       {/* Enhanced Floating Animation Overlay */}
                       <div className="absolute inset-0 rounded-full bg-gradient-to-br from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:animate-pulse"></div>
                     </div>
@@ -126,6 +135,12 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
           </div>
         </div>
       </Animate>
+      <StoryViewer
+        isOpen={isStoriesOpen}
+        onClose={() => setStoriesOpen(false)}
+        stories={defaultStories}
+        author={{ name: personalInfo.name, avatar: personalInfo.profileImage }}
+      />
     </Section>
   );
 };
