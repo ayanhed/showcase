@@ -228,18 +228,18 @@ export default function StoryViewer({
 
       {/* Viewer frame */}
       <div
-        className={cn(
-          "relative z-10 w-full bg-black overflow-hidden",
-          // Mobile: full screen
-          "h-screen",
-          // Desktop: rounded modal
-          "md:max-w-[420px] md:h-[80vh] md:max-h-[820px] md:rounded-xl md:border md:border-white/10 md:shadow-2xl",
-          // Entry/Exit animations
-          "transition-all duration-300 ease-out",
-          isVisible && !isExiting
-            ? "opacity-100 scale-100 translate-y-0"
-            : "opacity-0 scale-95 translate-y-2"
-        )}
+                                className={cn(
+            "relative z-10 w-full bg-black overflow-hidden",
+            // Mobile: full screen
+            "min-h-screen md:min-h-0 h-[100dvh]",
+            // Desktop: rounded modal
+            "md:max-w-[420px] md:h-[80vh] md:max-h-[820px] md:rounded-xl md:border md:border-white/10 md:shadow-2xl",
+            // Entry/Exit animations
+            "transition-all duration-300 ease-out",
+            isVisible && !isExiting
+              ? "opacity-100 scale-100 translate-y-0"
+              : "opacity-0 scale-95 translate-y-2"
+          )}
         onMouseDown={pause}
         onMouseUp={resume}
         onMouseLeave={resume}
