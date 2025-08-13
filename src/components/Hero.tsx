@@ -23,22 +23,13 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
     <Section spacing="lg">
       {/* Main Gradient Card */}
       <Animate type="slideUp" duration={0.8} delay={0.2}>
-        <div className="relative drop-shadow-lg bg-gradient-to-r from-green-900 overflow-hidden via-purple-800 to-pink-600 p-[0.5px] rounded-3xl">
-          {/* Background Image inside the card */}
-          <div className="absolute inset-0 z-0">
-            <Animate type="fade" duration={0.7} delay={0.4}>
-              <Image
-                src="/hero-image.jpg"
-                alt="Hero background"
-                fill
-                className="object-cover rounded-3xl opacity-65 lg:object-top object-bottom blur-xs"
-                priority
-              />
-            </Animate>
-          </div>
+        <div className="relative drop-shadow-lg p-[0.5px] rounded-3xl hero-container">
+          {/* Background Image Layer */}
+          <div className="absolute inset-0 rounded-3xl transition-all duration-700 background-image bg-[url('/hero-image.jpg')] bg-cover bg-center bg-no-repeat"></div>
 
-          <div className="bg-gradient-to-br from-black via-black/50 to-black/20 rounded-3xl p-5 lg:p-12 relative z-10">
-            <div className="flex flex-col lg:flex-row gap-10 items-center">
+          {/* Content Container */}
+          <div className="rounded-3xl p-5 lg:p-12 relative z-10">
+            <div className="flex flex-col lg:flex-row gap-10 items-center relative z-10">
               {/* Left Side - Content */}
               <div className="space-y-8 order-2 lg:order-1 flex-1">
                 {/* About Me Section */}
@@ -160,7 +151,10 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
         isOpen={isStoriesOpen}
         onClose={() => setStoriesOpen(false)}
         stories={defaultStories}
-        author={{ name: personalInfo.name, avatar: personalInfo.profileImage }}
+        author={{
+          name: personalInfo.name,
+          avatar: personalInfo.profileImage,
+        }}
       />
     </Section>
   );
