@@ -230,8 +230,8 @@ export default function StoryViewer({
       <div
         className={cn(
           "relative z-10 w-full bg-black overflow-hidden",
-          // Mobile: full screen
-          "h-screen",
+          // Mobile: full screen with dynamic viewport height
+          "h-[100dvh]",
           // Desktop: rounded modal
           "md:max-w-[420px] md:h-[80vh] md:max-h-[820px] md:rounded-xl md:border md:border-white/10 md:shadow-2xl",
           // Entry/Exit animations
@@ -330,7 +330,7 @@ export default function StoryViewer({
 
         {/* CTA */}
         {current?.cta && (
-          <div className="absolute bottom-6 md:bottom-6 left-0 right-0 flex justify-center z-20 pb-safe-bottom md:pb-0">
+          <div className="absolute bottom-4 md:bottom-6 left-0 right-0 flex justify-center z-20 pb-safe-bottom">
             <Button as="a" href={current.cta.href} variant="primary" size="md">
               {current.cta.label}
             </Button>
