@@ -1,15 +1,21 @@
-"use client";
-
 import Image from "next/image";
-import { useParams } from "next/navigation";
-import { projects, Project } from "@/lib/data";
-import { Heading, Text, Badge, Stack, Grid, Button } from "@/components/ui";
+import { getProject } from "./actions";
+import Heading from "@/components/ui/Heading";
+import Text from "@/components/ui/Text";
+import Badge from "@/components/ui/Badge";
+import Stack from "@/components/ui/Stack";
+import Grid from "@/components/ui/Grid";
+import Button from "@/components/ui/Button";
 import { ArrowRight } from "lucide-react";
 
-export default function ProjectPage() {
-  const params = useParams<{ slug: string }>();
-  const slug = (params?.slug as string) || "";
-  const project = (projects as Project[]).find((p) => p.slug === slug);
+interface ProjectPageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export default async function ProjectPage({ params }: ProjectPageProps) {
+  const { slug } = await params;
+  const project = await getProject(slug);
+
   if (!project) return null;
 
   return (

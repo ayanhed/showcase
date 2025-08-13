@@ -1,6 +1,6 @@
 import React from "react";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import Dot from "./Dot";
 
 interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {
   level?: 1 | 2 | 3 | 4 | 5 | 6;
@@ -33,21 +33,7 @@ const Heading = React.forwardRef<HTMLHeadingElement, HeadingProps>(
       showDot ? (
         <>
           {children}
-          <motion.span
-            aria-hidden="true"
-            className="text-purple-500"
-            animate={{ opacity: [1, 1, 0, 0] }}
-            transition={{
-              opacity: {
-                duration: 1,
-                repeat: Infinity,
-                ease: "linear",
-                times: [0, 0.7, 0.7, 1],
-              },
-            }}
-          >
-            .
-          </motion.span>
+          <Dot />
         </>
       ) : (
         children
