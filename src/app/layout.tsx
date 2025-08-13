@@ -95,7 +95,7 @@ export default function RootLayout({
         <Navigation />
         <div
           style={{ width: "100dvw", height: "100dvh", position: "fixed" }}
-          className="bg-gradient-to-b  -z-20 opacity-50"
+          className="bg-gradient-to-b  -z-20 opacity-65"
         >
           <DotGrid
             dotSize={2}

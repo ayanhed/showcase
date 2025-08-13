@@ -31,7 +31,7 @@ const Button = React.forwardRef<
     ref
   ) => {
     const baseClasses =
-      "inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-bg";
+      "inline-flex items-center cursor-pointer justify-center font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-bg";
 
     const variants = {
       primary:
