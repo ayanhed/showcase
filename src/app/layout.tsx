@@ -100,7 +100,7 @@ export default function RootLayout({
         <Navigation />
         <div
           style={{ width: "100vw", height: "100vh", position: "fixed" }}
-          className="bg-gradient-to-b -z-20 opacity-65"
+          className="bg-gradient-to-b z-10 opacity-65"
           aria-hidden="true"
           role="presentation"
         >
@@ -116,7 +116,7 @@ export default function RootLayout({
             returnDuration={1.5}
           />
         </div>
-        <main className="container mx-auto pt-10 min-h-screen">
+        <main className="container mx-auto pt-10 min-h-screen z-20 relative">
           <Providers>{children}</Providers>
         </main>
         <Footer personalInfo={personalInfo} contactInfo={contactInfo} />

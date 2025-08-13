@@ -36,10 +36,12 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    background-color: var(--color-dark-bg);
   }
 
   body {
     color: var(--color-dark-text);
+    background-color: var(--color-dark-bg);
   }
 
   /* Custom scrollbar */
