@@ -11,20 +11,12 @@ interface StackProps {
   wrap?: boolean;
 }
 
-const spacingClasses = {
-  xs: "space-y-1",
-  sm: "space-y-2",
-  md: "space-y-4",
-  lg: "space-y-6",
-  xl: "space-y-8",
-};
-
-const horizontalSpacingClasses = {
-  xs: "space-x-1",
-  sm: "space-x-2",
-  md: "space-x-4",
-  lg: "space-x-6",
-  xl: "space-x-8",
+const gapClasses = {
+  xs: "gap-1",
+  sm: "gap-2",
+  md: "gap-4",
+  lg: "gap-6",
+  xl: "gap-8",
 };
 
 const alignClasses = {
@@ -52,9 +44,7 @@ export default function Stack({
   wrap = false,
 }: StackProps) {
   const isHorizontal = direction === "horizontal";
-  const spacingClass = isHorizontal
-    ? horizontalSpacingClasses[spacing]
-    : spacingClasses[spacing];
+  const gapClass = gapClasses[spacing];
 
   return (
     <div
@@ -64,7 +54,7 @@ export default function Stack({
         alignClasses[align],
         justifyClasses[justify],
         wrap && "flex-wrap",
-        spacingClass,
+        gapClass,
         className
       )}
     >

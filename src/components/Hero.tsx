@@ -33,11 +33,16 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
               {/* Left Side - Content */}
               <div className="space-y-8 order-2 lg:order-1 flex-1 text-center lg:text-left">
                 {/* About Me Section */}
-                <Animate type="slideRight" duration={0.6} delay={0.4}>
+                <Animate
+                  type="slideRight"
+                  duration={0.6}
+                  delay={0.4}
+                  className="mb-12"
+                >
                   <div className="space-y-4">
                     <Heading
-                      level={1}
-                      className="text-white text-4xl lg:text-5xl font-bold text-center lg:text-left"
+                      level={2}
+                      className="text-white font-bold text-center lg:text-left text-4xl lg:text-5xl"
                     >
                       Hi, I&apos;m {personalInfo.name.split(" ")[0]}
                     </Heading>
@@ -68,13 +73,9 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
                     <Text
                       size="lg"
                       variant="default"
-                      className="text-white/90 leading-relaxed text-center lg:text-left"
+                      className="text-white/90 font-mono leading-relaxed text-center lg:text-left max-w-[300px]"
                     >
-                      {personalInfo.mission}
-                    </Text>
-
-                    <Text size="md" variant="muted" className="italic">
-                      Keep moving, don&apos;t settle.{" "}
+                      {personalInfo.mission}{" "}
                       <Image
                         src="/emojis/rocket.gif"
                         alt="Waving hand"
@@ -83,6 +84,10 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
                         className="inline-block"
                       />
                     </Text>
+
+                    {/* <Text size="md" variant="muted" className="italic">
+                      Keep moving, don&apos;t settle.
+                    </Text> */}
                   </div>
                 </Animate>
               </div>

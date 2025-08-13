@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { Viewport } from "next";
-import { Geist_Mono } from "next/font/google";
+import { Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
 import { contactInfo, personalInfo } from "../lib/data";
@@ -12,6 +12,11 @@ import DotGrid from "../components/ui/DotGrid";
 const geistMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-geist-mono",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 const title = `${data.personalInfo.name} - ${data.personalInfo.title}`;
@@ -66,7 +71,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${geistMono.variable} antialiased bg-gradient-to-b from-dark-bg via-dark-bg to-dark-card`}
+        className={`${geistMono.variable} ${inter.variable} antialiased bg-gradient-to-b from-dark-bg via-dark-bg to-dark-card`}
       >
         <script
           dangerouslySetInnerHTML={{
@@ -94,8 +99,10 @@ export default function RootLayout({
         />
         <Navigation />
         <div
-          style={{ width: "100dvw", height: "100dvh", position: "fixed" }}
-          className="bg-gradient-to-b  -z-20 opacity-65"
+          style={{ width: "100vw", height: "100vh", position: "fixed" }}
+          className="bg-gradient-to-b -z-20 opacity-65"
+          aria-hidden="true"
+          role="presentation"
         >
           <DotGrid
             dotSize={2}

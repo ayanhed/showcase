@@ -57,19 +57,13 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           <Stack direction="horizontal" spacing="sm" align="center">
             {slug ? (
               <NextLink href={`/projects/${slug}`} className="hover:underline">
-                <Heading level={3} className="text-lg sm:text-xl lg:text-2xl">
-                  {title}
-                </Heading>
+                <Heading level={4}>{title}</Heading>
               </NextLink>
             ) : (
-              <Heading level={3} className="text-lg sm:text-xl lg:text-2xl">
-                {title}
-              </Heading>
+              <Heading level={4}>{title}</Heading>
             )}
           </Stack>
-          <Text variant="muted" className="text-sm sm:text-base">
-            {description}
-          </Text>
+          <Text variant="muted">{description}</Text>
 
           <Stack direction="horizontal" spacing="md" className="mt-auto">
             {slug && (

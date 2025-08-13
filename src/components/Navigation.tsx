@@ -59,7 +59,7 @@ export default function Navigation() {
               <div key={item.name} className="relative">
                 <Link
                   href={item.href}
-                  className={`transition-colors duration-200 text-sm font-medium ${
+                  className={`transition-colors duration-200 font-medium ${
                     isActive ? "text-white" : "text-gray-400 hover:text-white"
                   }`}
                 >

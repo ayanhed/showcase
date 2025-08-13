@@ -37,7 +37,7 @@ export const personalInfo = {
   profileImage: "/profile.jpg", // Add profile image path - replace with actual JPG when available
   about:
     "Full Stack Developer with a designer's eye and a maker's mindset. Building software that feels as good as it works.",
-  mission: "Build beautifully, think deeply, and ship fast!",
+  mission: "Build beautifully, have fun & ship fast!",
   education: {
     degree: "Computer Systems BSc (Hons.)",
     university: "Nottingham Trent University",
@@ -60,13 +60,13 @@ export const skills = {
     { name: "Docker", weight: -0.8 },
     { name: "Azure", weight: -0.6 },
     { name: "AWS", weight: -0.9 },
-    { name: "Shopify", weight: 0.1 },
+    { name: "Shopify", weight: 0.4 },
     { name: "Express", weight: -0.7 },
     { name: "Redux", weight: 0.35 },
     { name: "Gatsby", weight: 0.55 },
     { name: "Next.js", weight: 0.15 },
     { name: "Webpack", weight: 0.75 },
-    { name: "Tailwind", weight: 0.4 },
+    { name: "Tailwind", weight: 0.23 },
     { name: "Storybook", weight: 0.6 },
   ],
 };

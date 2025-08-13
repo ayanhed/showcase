@@ -35,21 +35,18 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           )}
         </div>
         <Stack spacing="md">
-          <Heading level={2} className="text-xl sm:text-2xl">
-            {project.title}
-          </Heading>
-          <Text variant="muted" className="text-sm sm:text-base">
-            {project.description}
-          </Text>
+          <Heading level={2}>{project.title}</Heading>
+          <Text variant="muted">{project.description}</Text>
           {project.link && (
             <Button
               as="a"
               href={project.link}
+              target="_blank"
               icon={ArrowRight}
               iconPosition="right"
               size="sm"
             >
-              Visit website
+              View Project
             </Button>
           )}
         </Stack>
@@ -70,21 +67,18 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           )}
         </div>
         <Stack spacing="md">
-          <Heading level={2} className="text-xl sm:text-2xl lg:text-3xl">
-            {project.title}
-          </Heading>
-          <Text variant="muted" className="text-sm sm:text-base">
-            {project.description}
-          </Text>
+          <Heading level={2}>{project.title}</Heading>
+          <Text variant="muted">{project.description}</Text>
           {project.link && (
             <Button
               as="a"
               href={project.link}
+              target="_blank"
               icon={ArrowRight}
               iconPosition="right"
               size="sm"
             >
-              Visit website
+              View Project
             </Button>
           )}
         </Stack>
@@ -92,7 +86,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
       {project.techDetails && (
         <div className="mt-10">
-          <Heading level={3}>Tech Stack</Heading>
+          <Heading level={3} showDot>
+            Tech Stack
+          </Heading>
           <Grid cols={2} gap="md" responsive={true} className="mt-4">
             <div>
               <Text weight="semibold">Frontend</Text>
@@ -160,32 +156,34 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
       {project.features && (
         <div className="mt-10">
-          <Heading level={3}>Key Features</Heading>
-          <Stack spacing="sm" className="mt-4">
+          <Heading level={3} showDot>
+            Key Features
+          </Heading>
+          <ul className="mt-4 list-disc pl-5">
             {project.features.map((f, idx) => (
-              <Text key={idx} className="text-sm sm:text-base">
-                • {f}
-              </Text>
+              <li key={idx}>
+                <Text variant="muted">{f}</Text>
+              </li>
             ))}
-          </Stack>
+          </ul>
         </div>
       )}
 
       {project.challenge && (
         <div className="mt-10">
-          <Heading level={3}>Notable Challenge</Heading>
-          <Text variant="muted" className="mt-2 text-sm sm:text-base">
-            {project.challenge}
-          </Text>
+          <Heading level={3} showDot>
+            Notable Challenge
+          </Heading>
+          <Text variant="muted">{project.challenge}</Text>
         </div>
       )}
 
       {project.result && (
         <div className="mt-10">
-          <Heading level={3}>Result / Status</Heading>
-          <Text variant="muted" className="mt-2 text-sm sm:text-base">
-            {project.result}
-          </Text>
+          <Heading level={3} showDot>
+            Result / Status
+          </Heading>
+          <Text variant="muted">{project.result}</Text>
         </div>
       )}
     </div>

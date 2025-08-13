@@ -12,12 +12,12 @@ interface TextProps {
 }
 
 const sizeClasses = {
-  xs: "text-xs mb-1",
-  sm: "text-sm mb-1 leading-snug",
-  md: "text-base mb-2 leading-loose",
-  lg: "text-lg mb-4 leading-loose",
-  xl: "text-xl mb-4 leading-loose",
-  "2xl": "text-2xl mb-4 leading-loose",
+  xs: "text-sm mb-1", // increased from text-xs to text-sm
+  sm: "text-base mb-1 leading-snug", // increased from text-sm to text-base
+  md: "text-lg mb-2 leading-loose", // increased from text-base to text-lg
+  lg: "text-xl mb-4 leading-loose", // increased from text-lg to text-xl
+  xl: "text-2xl mb-4 leading-loose", // increased from text-xl to text-2xl
+  "2xl": "text-3xl mb-4 leading-loose", // increased from text-2xl to text-3xl
 };
 
 const variantClasses = {

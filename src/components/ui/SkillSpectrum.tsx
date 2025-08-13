@@ -5,6 +5,7 @@ import * as d3 from "d3";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import Badge from "./Badge";
 
 export interface TechnologyDatum {
   name: string;
@@ -39,18 +40,104 @@ const defaultPositions: Record<string, number> = {
   Storybook: 0.3,
 };
 
-// Stable segment definitions used by the chart
-const SEGMENTS: Array<{
+// Color constants for segments
+const SEGMENT_COLORS = {
+  meh: {
+    color: "rgba(107,114,128,0.15)",
+    glassColor: "rgba(107,114,128,0.25)",
+    borderColor: "rgba(107,114,128,0.3)",
+  },
+  good: {
+    color: "rgba(245,158,11,0.15)",
+    glassColor: "rgba(245,158,11,0.25)",
+    borderColor: "rgba(245,158,11,0.4)",
+  },
+  great: {
+    color: "rgba(16,185,129,0.15)",
+    glassColor: "rgba(16,185,129,0.25)",
+    borderColor: "rgba(16,185,129,0.4)",
+  },
+} as const;
+
+// Segment definitions for different screen sizes
+const SEGMENTS_DESKTOP: Array<{
   label: string;
   x0: number;
   x1: number;
   color: string;
+  glassColor: string;
+  borderColor: string;
 }> = [
-  { label: "meh", x0: -1, x1: -0.8, color: "rgba(107,114,128,0.35)" },
-  { label: "Good", x0: -0.8, x1: -0.4, color: "rgba(245,158,11,0.45)" },
-  { label: "Great", x0: -0.4, x1: 0.4, color: "rgba(16,185,129,0.45)" },
-  { label: "Good", x0: 0.4, x1: 0.8, color: "rgba(245,158,11,0.45)" },
-  { label: "meh", x0: 0.8, x1: 1, color: "rgba(107,114,128,0.35)" },
+  {
+    label: "meh",
+    x0: -1,
+    x1: -0.8,
+    ...SEGMENT_COLORS.meh,
+  },
+  {
+    label: "Good",
+    x0: -0.8,
+    x1: -0.4,
+    ...SEGMENT_COLORS.good,
+  },
+  {
+    label: "Great",
+    x0: -0.4,
+    x1: 0.4,
+    ...SEGMENT_COLORS.great,
+  },
+  {
+    label: "Good",
+    x0: 0.4,
+    x1: 0.8,
+    ...SEGMENT_COLORS.good,
+  },
+  {
+    label: "meh",
+    x0: 0.8,
+    x1: 1,
+    ...SEGMENT_COLORS.meh,
+  },
+];
+
+const SEGMENTS_MOBILE: Array<{
+  label: string;
+  x0: number;
+  x1: number;
+  color: string;
+  glassColor: string;
+  borderColor: string;
+}> = [
+  {
+    label: "meh",
+    x0: -1,
+    x1: -0.7,
+    ...SEGMENT_COLORS.meh,
+  },
+  {
+    label: "Good",
+    x0: -0.7,
+    x1: -0.3,
+    ...SEGMENT_COLORS.good,
+  },
+  {
+    label: "Great",
+    x0: -0.3,
+    x1: 0.3,
+    ...SEGMENT_COLORS.great,
+  },
+  {
+    label: "Good",
+    x0: 0.3,
+    x1: 0.7,
+    ...SEGMENT_COLORS.good,
+  },
+  {
+    label: "meh",
+    x0: 0.7,
+    x1: 1,
+    ...SEGMENT_COLORS.meh,
+  },
 ];
 
 function labelForValue(v: number) {
@@ -73,17 +160,75 @@ export default function SkillSpectrum({
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState<number>(720);
   const [hovered, setHovered] = useState<TechnologyDatum | null>(null);
+  const [autoPlayActive, setAutoPlayActive] = useState<boolean>(true);
+  const [currentAutoPlayIndex, setCurrentAutoPlayIndex] = useState<number>(0);
   const prefersReducedMotion = useReducedMotion();
 
   const techData = useMemo<TechnologyDatum[]>(() => {
-    return technologies.map((name) => {
+    const data = technologies.map((name) => {
       const value =
         (mapping && typeof mapping[name] === "number"
           ? mapping[name]!
           : defaultPositions[name]) ?? 0;
       return { name, value };
     });
+
+    // Sort by weight/value (positive numbers first, then negative)
+    return data.sort((a, b) => {
+      // If one is positive and one is negative, positive comes first
+      if (a.value >= 0 && b.value < 0) return -1;
+      if (a.value < 0 && b.value >= 0) return 1;
+      // If both are positive or both are negative, sort by value
+      return a.value - b.value;
+    });
   }, [technologies, mapping]);
+
+  // Auto-play functionality
+  useEffect(() => {
+    if (!autoPlayActive || techData.length === 0) return;
+
+    const interval = setInterval(() => {
+      setCurrentAutoPlayIndex(() => {
+        // Randomly select a technology index
+        return Math.floor(Math.random() * techData.length);
+      });
+    }, 2000); // Change every 2 seconds
+
+    return () => clearInterval(interval);
+  }, [autoPlayActive, techData.length]);
+
+  // Update hovered state based on auto-play
+  useEffect(() => {
+    if (autoPlayActive && techData.length > 0) {
+      setHovered(techData[currentAutoPlayIndex]);
+    }
+  }, [autoPlayActive, currentAutoPlayIndex, techData]);
+
+  // User interaction handlers
+  const handleUserInteraction = () => {
+    if (autoPlayActive) {
+      setAutoPlayActive(false);
+    }
+  };
+
+  const handleDotHover = (tech: TechnologyDatum) => {
+    setHovered(tech);
+  };
+
+  const handleDotLeave = () => {
+    if (!autoPlayActive) {
+      setHovered(null);
+    }
+  };
+
+  // Component-level mouse handlers for auto-play control
+  const handleComponentMouseEnter = () => {
+    setAutoPlayActive(false);
+  };
+
+  const handleComponentMouseLeave = () => {
+    setAutoPlayActive(true);
+  };
 
   // Responsive width
   useEffect(() => {
@@ -116,13 +261,18 @@ export default function SkillSpectrum({
   const labelBubbleGap = 6;
   const labelY = bandY - 6 - labelBubbleHeight - labelBubbleGap; // place above background
 
+  // Select segments based on screen width (mobile breakpoint at 768px)
+  const segments = useMemo(() => {
+    return width < 768 ? SEGMENTS_MOBILE : SEGMENTS_DESKTOP;
+  }, [width]);
+
   const hoveredSegmentIndex = useMemo(() => {
     if (!hovered) return null;
     const v = hovered.value;
     let idx: number | null = null;
-    for (let i = 0; i < SEGMENTS.length; i++) {
-      const s = SEGMENTS[i];
-      const isLast = i === SEGMENTS.length - 1;
+    for (let i = 0; i < segments.length; i++) {
+      const s = segments[i];
+      const isLast = i === segments.length - 1;
       const inRange = isLast ? v >= s.x0 && v <= s.x1 : v >= s.x0 && v < s.x1;
       if (inRange) {
         idx = i;
@@ -130,7 +280,7 @@ export default function SkillSpectrum({
       }
     }
     return idx;
-  }, [hovered]);
+  }, [hovered, segments]);
 
   const boundaries = [0];
 
@@ -165,7 +315,12 @@ export default function SkillSpectrum({
     : 0;
 
   return (
-    <div ref={containerRef} className={cn("w-full relative", className)}>
+    <div
+      ref={containerRef}
+      className={cn("w-full relative", className)}
+      onMouseEnter={handleComponentMouseEnter}
+      onMouseLeave={handleComponentMouseLeave}
+    >
       <motion.svg
         width="100%"
         viewBox={`0 0 ${outerWidth} ${outerHeight}`}
@@ -179,6 +334,54 @@ export default function SkillSpectrum({
           prefersReducedMotion ? undefined : { duration: 0.35, ease: "easeOut" }
         }
       >
+        {/* Glass effect filter */}
+        <defs>
+          <filter
+            id="glass-effect"
+            x="-50%"
+            y="-50%"
+            width="200%"
+            height="200%"
+          >
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
+            <feColorMatrix
+              type="matrix"
+              values="1 0 0 0 0
+                      0 1 0 0 0
+                      0 0 1 0 0
+                      0 0 0 0.1 0"
+            />
+            <feBlend mode="overlay" in="SourceGraphic" />
+          </filter>
+          <filter id="glass-blur" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="1" />
+          </filter>
+          {/* Dot glass effect filter */}
+          <filter id="dot-glass" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur stdDeviation="1" />
+            <feColorMatrix
+              type="matrix"
+              values="1 0 0 0 0
+                      0 1 0 0 0
+                      0 0 1 0 0
+                      0 0 0 0.3 0"
+            />
+          </filter>
+          {/* Active dot glow effect */}
+          <filter
+            id="active-dot-glow"
+            x="-100%"
+            y="-100%"
+            width="300%"
+            height="300%"
+          >
+            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
         <g transform={`translate(${margin.left},${margin.top})`}>
           {/* Track background */}
           <rect
@@ -191,9 +394,9 @@ export default function SkillSpectrum({
           />
 
           {/* Colored segments with labels */}
-          {SEGMENTS.map((s, i) => {
+          {segments.map((s, i) => {
             const x0 = x(s.x0) + (i === 0 ? 0 : gap / 2);
-            const x1 = x(s.x1) - (i === SEGMENTS.length - 1 ? 0 : gap / 2);
+            const x1 = x(s.x1) - (i === segments.length - 1 ? 0 : gap / 2);
             const mid = (x0 + x1) / 2;
             const segOpacity =
               hovered && hoveredSegmentIndex !== null
@@ -214,6 +417,18 @@ export default function SkillSpectrum({
                     : { delay: i * 0.05, duration: 0.35, ease: "easeOut" }
                 }
               >
+                {/* Glass effect background */}
+                <rect
+                  x={x0}
+                  y={bandY}
+                  width={Math.max(0, x1 - x0)}
+                  height={bandH}
+                  fill={s.glassColor}
+                  rx={8}
+                  filter="url(#glass-blur)"
+                  opacity={0.3}
+                />
+                {/* Main glass segment */}
                 <rect
                   x={x0}
                   y={bandY}
@@ -221,6 +436,12 @@ export default function SkillSpectrum({
                   height={bandH}
                   fill={s.color}
                   rx={8}
+                  stroke={s.borderColor}
+                  strokeWidth={1}
+                  style={{
+                    backdropFilter: "blur(8px) saturate(150%)",
+                    filter: "url(#glass-effect)",
+                  }}
                 />
                 <text
                   x={mid}
@@ -291,58 +512,107 @@ export default function SkillSpectrum({
 
           {/* Marker layer */}
           <g className="marker-layer">
-            {/* Guides */}
-            {(hovered ? [hovered] : visibleTech).map((d) => (
+            {/* Guides - only show when hovered */}
+            {hovered && (
               <line
-                key={`guide-${d.name}-${hovered ? "hover" : "idle"}`}
+                key={`guide-${hovered.name}-hover`}
                 className="guide"
-                x1={x(d.value)}
-                x2={x(d.value)}
+                x1={x(hovered.value)}
+                x2={x(hovered.value)}
                 y1={12}
                 y2={axisY}
                 stroke="white"
                 strokeLinecap="round"
                 strokeDasharray="3,5"
                 style={{
-                  opacity: hovered ? 0.7 : 0.4,
-                  strokeWidth: hovered ? 1.5 : 1,
+                  opacity: 0.7,
+                  strokeWidth: 1.5,
                 }}
               />
-            ))}
+            )}
 
             {/* Dots */}
             {visibleTech.map((d) => {
               const isHovered = hovered && hovered.name === d.name;
+
               return (
-                <circle
-                  key={`point-${d.name}`}
-                  className="point"
-                  cx={x(d.value)}
-                  cy={axisY}
-                  r={5}
-                  fill="#ffffff"
-                  fillOpacity={1}
-                  stroke={"var(--color-accent-purple)"}
-                  strokeWidth={isHovered ? 2.5 : 0}
-                  onMouseEnter={() => setHovered(d)}
-                  onMouseLeave={() => setHovered(null)}
-                  style={{
-                    cursor: "pointer",
-                  }}
-                />
+                <g key={`point-${d.name}`}>
+                  {/* Glow effect for active dot */}
+                  <motion.circle
+                    cx={x(d.value)}
+                    cy={axisY}
+                    r={6}
+                    fill="var(--color-accent-purple)"
+                    opacity={0}
+                    filter="url(#active-dot-glow)"
+                    animate={{
+                      opacity: isHovered ? 0.3 : 0,
+                      scale: isHovered ? 1 : 0,
+                    }}
+                    transition={{
+                      duration: 0.2,
+                      ease: "easeOut",
+                    }}
+                  />
+                  {/* Glass effect background */}
+                  <motion.circle
+                    cx={x(d.value)}
+                    cy={axisY}
+                    r={3}
+                    fill="rgba(255,255,255,0.2)"
+                    filter="url(#dot-glass)"
+                    opacity={0.4}
+                    animate={{
+                      scale: isHovered ? 1.33 : 1, // Scale up by 33% when hovered
+                    }}
+                    transition={{
+                      duration: 0.2,
+                      ease: "easeOut",
+                    }}
+                  />
+                  {/* Main glass dot */}
+                  <motion.circle
+                    className="point"
+                    cx={x(d.value)}
+                    cy={axisY}
+                    r={3}
+                    fill="rgba(255,255,255,0.9)"
+                    stroke={
+                      isHovered
+                        ? "var(--color-accent-purple)"
+                        : "rgba(255,255,255,0.3)"
+                    }
+                    strokeWidth={isHovered ? 2 : 1}
+                    onMouseEnter={() => handleDotHover(d)}
+                    onMouseLeave={handleDotLeave}
+                    style={{
+                      cursor: "pointer",
+                      backdropFilter: "blur(4px) saturate(150%)",
+                      filter: "url(#glass-effect)",
+                    }}
+                    animate={{
+                      scale: isHovered ? 1.33 : 1, // Scale up by 33% when hovered
+                      strokeWidth: isHovered ? 2 : 1,
+                    }}
+                    transition={{
+                      duration: 0.2,
+                      ease: "easeOut",
+                    }}
+                  />
+                </g>
               );
             })}
           </g>
         </g>
       </motion.svg>
 
-      {/* Hover tooltip overlay for natural text wrapping */}
+      {/* Hover tooltip overlay using Badge component */}
       <AnimatePresence>
         {hovered && (
           <motion.div
             key="tooltip"
             ref={tooltipRef}
-            className="pointer-events-none absolute z-10 rounded-md border border-[color:var(--color-accent-purple)]/20 bg-white/95 px-2 py-1 shadow-sm"
+            className="pointer-events-none absolute z-10"
             style={{
               left: 0,
               top: 0,
@@ -357,17 +627,21 @@ export default function SkillSpectrum({
                 : { duration: 0.18, ease: "easeOut" }
             }
           >
-            <div className="flex items-center gap-2">
+            <Badge
+              variant="primary"
+              size="sm"
+              className="flex items-center gap-2"
+            >
               <Image
                 src={`/tech/${hovered.name.toLowerCase()}.svg`}
                 alt=""
                 width={16}
                 height={16}
               />
-              <span className="text-[12px] font-semibold text-gray-900 break-words whitespace-normal">
+              <span className="break-words whitespace-normal">
                 {hovered.name}
               </span>
-            </div>
+            </Badge>
           </motion.div>
         )}
       </AnimatePresence>
@@ -378,10 +652,10 @@ export default function SkillSpectrum({
           <button
             key={t.name}
             type="button"
-            onMouseEnter={() => setHovered(t)}
-            onMouseLeave={() => setHovered(null)}
-            onFocus={() => setHovered(t)}
-            onBlur={() => setHovered(null)}
+            onMouseEnter={() => handleDotHover(t)}
+            onMouseLeave={handleDotLeave}
+            onFocus={() => handleDotHover(t)}
+            onBlur={handleDotLeave}
             className={cn(
               "px-4 py-2.5 rounded-full cursor-pointer",
               "bg-white/10 text-white hover:bg-white/20 transition-colors",

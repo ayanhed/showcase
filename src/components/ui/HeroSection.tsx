@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import Section from "./Section";
 import Heading from "./Heading";
 import Container from "./Container";
+import Text from "./Text";
 
 interface HeroSectionProps {
   title: string;
@@ -18,7 +19,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   className,
 }) => {
   return (
-    <Section spacing="lg" className={`pt-20 ${className}`}>
+    <Section spacing="lg" className={`${className}`}>
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -26,13 +27,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center"
         >
-          <Heading level={1} className="mb-6" showDot>
+          <Heading level={1} showDot>
             {title}
           </Heading>
           {subtitle && (
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-8">
+            <Text variant="muted" align="center" className="max-w-3xl mx-auto">
               {subtitle}
-            </p>
+            </Text>
           )}
           {children}
         </motion.div>

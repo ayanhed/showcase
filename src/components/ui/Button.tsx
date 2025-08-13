@@ -10,6 +10,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   as?: "button" | "a";
   href?: string;
+  target?: string;
 }
 
 const Button = React.forwardRef<
@@ -26,6 +27,7 @@ const Button = React.forwardRef<
       children,
       as = "button",
       href,
+      target,
       ...props
     },
     ref
@@ -56,6 +58,7 @@ const Button = React.forwardRef<
       return (
         <a
           href={href}
+          target={target}
           className={classes}
           ref={ref as React.Ref<HTMLAnchorElement>}
           {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}

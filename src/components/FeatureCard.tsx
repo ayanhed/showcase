@@ -6,6 +6,7 @@ import Text from "./ui/Text";
 import Button from "./ui/Button";
 import Icon from "./ui/Icon";
 import { LucideIcon } from "lucide-react";
+import Heading from "./ui/Heading";
 
 interface FeatureCardProps {
   icon: LucideIcon;
@@ -50,7 +51,9 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
           >
             <Icon icon={icon} size="sm" className="text-white" />
           </div>
-          <h4 className="text-white font-semibold">{title}</h4>
+          <Heading level={6} className="text-white font-semibold mb-0">
+            {title}
+          </Heading>
         </div>
         <Text>{description}</Text>
         {cta && (

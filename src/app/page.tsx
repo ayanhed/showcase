@@ -31,22 +31,26 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Left Side */}
           <Animate type="slideLeft" duration={0.8} delay={0.4} once={true}>
-            <Heading level={2} className="mb-6" showDot>
+            <Heading level={2} showDot>
               About me
             </Heading>
             <Text size="lg" variant="muted">
-              I have been coding for over 8 years, beginning my journey in 2016.
-              I specialize in building scalable, production-grade systems using
-              modern web technologies and cloud-native architectures.
+              I build things for the web and occasionally break them just to
+              make them better. My happy place is somewhere between designing
+              sleek UIs, engineering scalable backends, and finding that one
+              missing semicolon that ruined everything.
             </Text>
             <Text size="lg" variant="muted">
-              My expertise lies in full-stack development with React, Node.js,
-              and TypeScript, along with extensive experience in Azure cloud
-              infrastructure and DevOps practices including CI/CD pipelines.
+              This site is my digital workshop — a mix of blog posts, side
+              projects, and random experiments. Sometimes it’s polished,
+              sometimes it’s chaotic, but it’s always me, building, learning,
+              and sharing along the way.
             </Text>
             <Stack direction="horizontal" spacing="md">
               <Button icon={ArrowRight} iconPosition="right">
-                <Link href={contactInfo.github}>My Github</Link>
+                <Link target="_blank" href={contactInfo.github}>
+                  My Github
+                </Link>
               </Button>
               <Button
                 variant="secondary"
@@ -105,7 +109,7 @@ export default function Home() {
           once={true}
           className="text-center mb-12"
         >
-          <Heading level={2} className="mb-4" showDot>
+          <Heading level={2} showDot>
             Recent Projects
           </Heading>
           <Text
@@ -151,7 +155,7 @@ export default function Home() {
           once={true}
           className="text-center mb-12"
         >
-          <Heading level={2} className="mb-4" showDot>
+          <Heading level={2} showDot>
             Contact me
           </Heading>
           <Text
