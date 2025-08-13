@@ -37,7 +37,7 @@ export const personalInfo = {
   profileImage: "/profile.jpg", // Add profile image path - replace with actual JPG when available
   about:
     "Full Stack Developer with a designer's eye and a maker's mindset. Building software that feels as good as it works.",
-  mission: "Build beautifully, think deeply, and stay true to what's right.",
+  mission: "Build beautifully, think deeply, and ship fast!",
   education: {
     degree: "Computer Systems BSc (Hons.)",
     university: "Nottingham Trent University",

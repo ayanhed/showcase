@@ -31,21 +31,21 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
           <div className="rounded-3xl p-5 lg:p-12 relative z-10">
             <div className="flex flex-col lg:flex-row gap-10 items-center relative z-10">
               {/* Left Side - Content */}
-              <div className="space-y-8 order-2 lg:order-1 flex-1">
+              <div className="space-y-8 order-2 lg:order-1 flex-1 text-center lg:text-left">
                 {/* About Me Section */}
                 <Animate type="slideRight" duration={0.6} delay={0.4}>
                   <div className="space-y-4">
                     <Heading
                       level={1}
-                      className="text-white text-4xl lg:text-5xl font-bold"
+                      className="text-white text-4xl lg:text-5xl font-bold text-center lg:text-left"
                     >
-                      Hi, I&apos;m {personalInfo.name.split(" ")[0]} 👋
+                      Hi, I&apos;m {personalInfo.name.split(" ")[0]}
                     </Heading>
 
                     <Text
                       size="xl"
                       variant="default"
-                      className="text-white/90 leading-relaxed"
+                      className="text-white/90 leading-relaxed text-center lg:text-left"
                     >
                       {personalInfo.about}
                     </Text>
@@ -54,7 +54,7 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
 
                 {/* Mission Section */}
                 <Animate type="slideRight" duration={0.6} delay={0.6}>
-                  <div className="space-y-4">
+                  <div className="space-y-4 text-center lg:text-left flex justify-center lg:justify-start flex-col items-center lg:items-start">
                     <div className="flex items-center gap-2">
                       <Badge
                         variant="success"
@@ -68,13 +68,20 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
                     <Text
                       size="lg"
                       variant="default"
-                      className="text-white/90 leading-relaxed"
+                      className="text-white/90 leading-relaxed text-center lg:text-left"
                     >
                       {personalInfo.mission}
                     </Text>
 
                     <Text size="md" variant="muted" className="italic">
-                      Keep moving, don&apos;t settle. 🚀
+                      Keep moving, don&apos;t settle.{" "}
+                      <Image
+                        src="/emojis/rocket.gif"
+                        alt="Waving hand"
+                        width={25}
+                        height={25}
+                        className="inline-block"
+                      />
                     </Text>
                   </div>
                 </Animate>
