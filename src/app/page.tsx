@@ -30,7 +30,7 @@ export default function Home() {
       <Section>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Left Side */}
-          <Animate type="slideLeft" duration={0.8} once={true}>
+          <Animate type="slideLeft" duration={0.8} delay={0.4} once={true}>
             <Heading level={2} className="mb-6" showDot>
               About me
             </Heading>
@@ -62,6 +62,7 @@ export default function Home() {
           <Animate
             type="slideRight"
             duration={0.8}
+            delay={0.4}
             once={true}
             className="space-y-6"
           >
@@ -100,6 +101,7 @@ export default function Home() {
         <Animate
           type="slideUp"
           duration={0.8}
+          delay={0.4}
           once={true}
           className="text-center mb-12"
         >
@@ -145,6 +147,7 @@ export default function Home() {
         <Animate
           type="slideUp"
           duration={0.8}
+          delay={0.4}
           once={true}
           className="text-center mb-12"
         >

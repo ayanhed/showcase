@@ -13,46 +13,79 @@ import { personalInfo } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import Button from "@/components/ui/Button";
 
-export type StoryItem = {
-  id: string;
-  type: "image" | "video" | "text";
-  src?: string; // for image/video
-  text?: string; // for text stories
-  background?: string; // bg for text story
-  durationMs?: number; // for image/text, default 5000
-  cta?: { label: string; href: string };
-  postedAt?: string;
-};
+export interface StoryItem {
+  readonly id: string;
+  readonly type: "image" | "text";
+  readonly src?: string;
+  readonly text?: string;
+  readonly background?: string;
+  readonly durationMs?: number;
+  readonly cta?: {
+    readonly label: string;
+    readonly href: string;
+  };
+  readonly postedAt?: string;
+}
+
+export interface StoryAuthor {
+  readonly name: string;
+  readonly avatar: string;
+}
 
 interface StoryViewerProps {
-  isOpen: boolean;
-  onClose: () => void;
-  stories: ReadonlyArray<StoryItem>;
-  author?: { name: string; avatar: string };
-  initialIndex?: number;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly stories: ReadonlyArray<StoryItem>;
+  readonly author?: StoryAuthor;
+  readonly initialIndex?: number;
 }
 
 const DEFAULT_DURATION = 5000;
+const ANIMATION_DURATION = 300;
+const PROGRESS_UPDATE_INTERVAL = 16; // ~60fps
+
+// Helper functions
+const getDefaultAuthor = (): StoryAuthor => ({
+  name: personalInfo.name,
+  avatar: personalInfo.profileImage,
+});
+
+const clampProgress = (progress: number): number =>
+  Math.max(0, Math.min(1, progress));
+
+const hasCallToAction = (story: StoryItem): boolean =>
+  Boolean(story.cta?.label && story.cta?.href);
 
 export default function StoryViewer({
   isOpen,
   onClose,
   stories,
-  author = { name: personalInfo.name, avatar: personalInfo.profileImage },
+  author = getDefaultAuthor(),
   initialIndex = 0,
 }: StoryViewerProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isPaused, setIsPaused] = useState(false);
-  const [, force] = useState(0);
+  const [progressTrigger, setProgressTrigger] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+
   const timerRef = useRef<number | null>(null);
-  const progressRef = useRef<number>(0); // 0..1 for current story
+  const progressRef = useRef<number>(0);
 
-  const current = stories[currentIndex];
-
-  const canShow = isOpen && stories.length > 0;
+  // Memoized values
+  const currentStory = useMemo(
+    () => stories[currentIndex],
+    [stories, currentIndex]
+  );
+  const canShow = useMemo(
+    () => isOpen && stories.length > 0,
+    [isOpen, stories.length]
+  );
+  const isLastStory = useMemo(
+    () => currentIndex >= stories.length - 1,
+    [currentIndex, stories.length]
+  );
+  const isFirstStory = useMemo(() => currentIndex <= 0, [currentIndex]);
 
   // Handle entry animation
   useEffect(() => {
@@ -64,148 +97,128 @@ export default function StoryViewer({
     }
   }, [canShow]);
 
-  // Handle exit animation
-  const handleClose = useCallback(() => {
-    setIsExiting(true);
-    setTimeout(() => {
-      onClose();
-      setIsExiting(false);
-    }, 300); // Match animation duration
-  }, [onClose]);
-
+  // Timer management
   const resetTimer = useCallback(() => {
-    if (timerRef.current) {
+    if (timerRef.current !== null) {
       window.clearInterval(timerRef.current);
       timerRef.current = null;
     }
   }, []);
 
+  // Handle exit animation
+  const handleClose = useCallback(() => {
+    resetTimer();
+    setIsExiting(true);
+    const timeoutId = setTimeout(() => {
+      onClose();
+      setIsExiting(false);
+    }, ANIMATION_DURATION);
+
+    // Cleanup timeout if component unmounts
+    return () => clearTimeout(timeoutId);
+  }, [onClose, resetTimer]);
+
   const goNext = useCallback(() => {
     resetTimer();
-    if (currentIndex < stories.length - 1) {
-      setCurrentIndex((i) => i + 1);
-    } else {
+    if (isLastStory) {
       handleClose();
+    } else {
+      // Reset progress immediately before changing story
+      progressRef.current = 0;
+      setProgressTrigger((prev) => (prev + 1) % 1000);
+      setCurrentIndex((prevIndex) => prevIndex + 1);
     }
-  }, [currentIndex, stories.length, handleClose, resetTimer]);
+  }, [isLastStory, handleClose, resetTimer]);
 
   const goPrev = useCallback(() => {
     resetTimer();
-    if (currentIndex > 0) {
-      setCurrentIndex((i) => i - 1);
+    if (!isFirstStory) {
+      // Reset progress immediately before changing story
+      progressRef.current = 0;
+      setProgressTrigger((prev) => (prev + 1) % 1000);
+      setCurrentIndex((prevIndex) => prevIndex - 1);
     }
-  }, [currentIndex, resetTimer]);
+  }, [isFirstStory, resetTimer]);
 
-  // Keyboard nav
+  // Keyboard navigation
   useEffect(() => {
     if (!canShow) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") handleClose();
-      if (e.key === "ArrowRight") goNext();
-      if (e.key === "ArrowLeft") goPrev();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      switch (event.key) {
+        case "Escape":
+          event.preventDefault();
+          handleClose();
+          break;
+        case "ArrowRight":
+          event.preventDefault();
+          // Instantly complete current and advance
+          progressRef.current = 1;
+          setProgressTrigger((prev) => (prev + 1) % 1000);
+          goNext();
+          break;
+        case "ArrowLeft":
+          event.preventDefault();
+          goPrev();
+          break;
+        default:
+          break;
+      }
     };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [canShow, handleClose, goNext, goPrev]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [canShow, handleClose, goNext, goPrev, currentStory]);
 
-  // Manage timers/progress for image/text
+  // Progress management for stories
   useEffect(() => {
-    if (!canShow) return;
+    if (!canShow || !currentStory) return;
     progressRef.current = 0;
 
-    // For videos, progress handled via timeupdate
-    if (current?.type === "video") {
-      return;
-    }
-
-    const duration = current?.durationMs ?? DEFAULT_DURATION;
-    const start = performance.now();
-
-    const tick = () => {
+    const duration = currentStory.durationMs ?? DEFAULT_DURATION;
+    const startTime = performance.now();
+    const updateProgress = () => {
       if (isPaused) return;
-      const elapsed = performance.now() - start;
-      progressRef.current = Math.min(1, elapsed / duration);
-      force((n) => (n + 1) % 1000);
+      const elapsed = performance.now() - startTime;
+      const newProgress = elapsed / duration;
+      progressRef.current = clampProgress(newProgress);
+      setProgressTrigger((prev) => (prev + 1) % 1000);
       if (progressRef.current >= 1) {
         goNext();
       }
     };
-
-    // 60fps approx
-    timerRef.current = window.setInterval(tick, 16);
-
-    return () => {
-      resetTimer();
-    };
-  }, [
-    canShow,
-    current?.type,
-    current?.durationMs,
-    goNext,
-    isPaused,
-    resetTimer,
-  ]);
+    timerRef.current = window.setInterval(
+      updateProgress,
+      PROGRESS_UPDATE_INTERVAL
+    );
+    return resetTimer;
+  }, [canShow, currentStory, goNext, isPaused, resetTimer]);
 
   // Pause/resume helpers
   const pause = useCallback(() => setIsPaused(true), []);
   const resume = useCallback(() => setIsPaused(false), []);
 
-  // Video progress binding
-  const handleTimeUpdate = useCallback(() => {
-    const video = videoRef.current;
-    if (video && video.duration && !isPaused) {
-      progressRef.current = Math.min(1, video.currentTime / video.duration);
-      force((n) => (n + 1) % 1000);
-    }
-  }, [isPaused]);
-
-  const handleVideoEnded = useCallback(() => {
-    goNext();
-  }, [goNext]);
-
-  // Reset video ref when story changes
-  useEffect(() => {
-    if (current?.type === "video") {
-      // Autoplay when ready
-      requestAnimationFrame(() => videoRef.current?.play().catch(() => {}));
-    } else {
-      if (videoRef.current) {
-        try {
-          videoRef.current.pause();
-        } catch {}
-      }
-    }
-  }, [current?.type]);
-
   const handleTapZone = useCallback(
-    (dir: "left" | "right") => {
-      if (dir === "left") {
-        if (current?.type === "video") {
-          try {
-            videoRef.current?.pause();
-          } catch {}
-        }
+    (direction: "left" | "right") => {
+      if (direction === "left") {
         goPrev();
       } else {
-        if (current?.type === "video") {
-          try {
-            videoRef.current?.pause();
-          } catch {}
-        }
+        // Instantly fill current, then advance
+        progressRef.current = 1;
+        setProgressTrigger((prev) => (prev + 1) % 1000);
         goNext();
       }
     },
-    [current?.type, goNext, goPrev]
+    [goNext, goPrev]
   );
 
-  // Compute progress widths for segments
-  const segments = useMemo(() => {
-    return stories.map((_, idx) => {
-      if (idx < currentIndex) return 1;
-      if (idx > currentIndex) return 0;
-      return progressRef.current;
+  // Compute progress for each story segment
+  const progressSegments = useMemo(() => {
+    return stories.map((_, index) => {
+      if (index < currentIndex) return 1; // Completed stories
+      if (index > currentIndex) return 0; // Future stories
+      return progressRef.current; // Current story progress
     });
-  }, [stories, currentIndex]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stories, currentIndex, progressTrigger]); // progressTrigger needed to force updates
 
   // Don't render if not open and not exiting
   if (!isOpen && !isExiting) return null;
@@ -213,12 +226,14 @@ export default function StoryViewer({
   return (
     <div
       className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center",
+        "fixed inset-0 z-50 flex items-center justify-center user-select-none",
         "transition-opacity duration-300 ease-out",
         isVisible && !isExiting ? "opacity-100" : "opacity-0"
       )}
       aria-modal="true"
       role="dialog"
+      aria-label={`Story viewer - ${currentStory?.id || "Loading"}`}
+      aria-describedby="story-content"
     >
       {/* Backdrop */}
       <div
@@ -247,15 +262,22 @@ export default function StoryViewer({
         onTouchEnd={resume}
       >
         {/* Progress bars */}
-        <div className="absolute top-3 md:top-3 left-3 right-3 z-20 flex gap-1 pt-safe-top md:pt-0">
-          {segments.map((p, idx) => (
+        <div
+          className="absolute top-3 md:top-3 left-3 right-3 z-20 flex gap-1 pt-safe-top md:pt-0"
+          role="progressbar"
+          aria-label={`Story ${currentIndex + 1} of ${stories.length}`}
+          aria-valuenow={currentIndex + 1}
+          aria-valuemin={1}
+          aria-valuemax={stories.length}
+        >
+          {progressSegments.map((progress, index) => (
             <div
-              key={idx}
+              key={`progress-${stories[index]?.id || index}`}
               className="h-1 flex-1 bg-white/20 rounded-full overflow-hidden"
             >
               <div
-                className="h-full bg-white rounded-full transition-[width] duration-150"
-                style={{ width: `${Math.max(0, Math.min(1, p)) * 100}%` }}
+                className="h-full bg-white rounded-full"
+                style={{ width: `${clampProgress(progress) * 100}%` }}
               />
             </div>
           ))}
@@ -285,79 +307,94 @@ export default function StoryViewer({
         </div>
 
         {/* Content */}
-        <div className="w-full h-full flex items-center justify-center bg-black">
-          {current?.type === "image" && current.src && (
+        <div
+          id="story-content"
+          className="w-full h-full flex items-center justify-center bg-black"
+        >
+          {currentStory?.type === "image" && currentStory.src && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={current.src}
-              alt="story"
+              src={currentStory.src}
+              alt={`Story image ${currentIndex + 1}`}
               className="w-full h-full object-contain"
               draggable={false}
             />
           )}
 
-          {current?.type === "video" && current.src && (
-            <video
-              ref={videoRef}
-              src={current.src}
-              className="w-full h-full object-contain"
-              playsInline
-              muted={true}
-              controls={false}
-              preload="metadata"
-              crossOrigin="anonymous"
-              onTimeUpdate={handleTimeUpdate}
-              onEnded={handleVideoEnded}
-              onPlay={() => setIsPaused(false)}
-              onPause={() => setIsPaused(true)}
-              autoPlay
-            />
-          )}
-
-          {current?.type === "text" && (
+          {currentStory?.type === "text" && (
             <div
               className={cn(
                 "w-full h-full flex items-center justify-center p-8",
-                current.background ?? "bg-gradient-to-br from-gray-900 to-black"
+                currentStory.background ??
+                  "bg-gradient-to-br from-gray-900 to-black"
               )}
             >
-              <p className="text-white text-2xl leading-relaxed text-center whitespace-pre-wrap">
-                {current.text}
+              <p
+                className="text-white text-2xl leading-relaxed text-center whitespace-pre-wrap"
+                aria-label={`Story text: ${currentStory.text}`}
+              >
+                {currentStory.text}
               </p>
             </div>
           )}
         </div>
 
-        {/* CTA */}
-        {current?.cta && (
-          <div className="absolute bottom-4 md:bottom-6 left-0 right-0 flex justify-center z-20 pb-safe-bottom">
-            <Button as="a" href={current.cta.href} variant="primary" size="md">
-              {current.cta.label}
+        {/* Call to Action */}
+        {hasCallToAction(currentStory) && currentStory.cta && (
+          <div className="absolute bottom-7 md:bottom-10 left-0 right-0 flex justify-center z-20 pb-safe-bottom">
+            <Button
+              as="a"
+              href={currentStory.cta.href}
+              variant="primary"
+              size="md"
+              aria-label={`${currentStory.cta.label} - Opens in new tab`}
+            >
+              {currentStory.cta.label}
             </Button>
           </div>
         )}
 
-        {/* Tap zones */}
+        {/* Tap zones for navigation */}
         <button
-          aria-label="Previous"
-          className="absolute inset-y-0 left-0 w-1/2 z-30 cursor-pointer focus:outline-none"
-          onClick={(e) => {
-            e.stopPropagation();
+          type="button"
+          aria-label={`Previous story${isFirstStory ? " (disabled)" : ""}`}
+          className={cn(
+            "absolute user-select-none left-0 w-1/2 z-30 cursor-pointer focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0",
+            // Exclude top area (header) and bottom area (CTA)
+            hasCallToAction(currentStory)
+              ? "top-16 md:top-16 bottom-20 md:bottom-24" // Leave space for header and CTA
+              : "top-16 md:top-16 bottom-0" // Leave space for header only
+          )}
+          onClick={(event) => {
+            event.stopPropagation();
             handleTapZone("left");
           }}
+          disabled={isFirstStory}
         />
         <button
-          aria-label="Next"
-          className="absolute inset-y-0 right-0 w-1/2 z-30 cursor-pointer focus:outline-none"
-          onClick={(e) => {
-            e.stopPropagation();
+          type="button"
+          aria-label={`Next story${isLastStory ? " (will close viewer)" : ""}`}
+          className={cn(
+            "absolute user-select-none right-0 w-1/2 z-30 cursor-pointer focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0",
+            // Exclude top area (header) and bottom area (CTA)
+            hasCallToAction(currentStory)
+              ? "top-16 md:top-16 bottom-20 md:bottom-24" // Leave space for header and CTA
+              : "top-16 md:top-16 bottom-0" // Leave space for header only
+          )}
+          onClick={(event) => {
+            event.stopPropagation();
             handleTapZone("right");
           }}
         />
 
-        {/* Optional visual chevrons for desktop hover */}
+        {/* Visual navigation indicators for desktop */}
         <div className="pointer-events-none absolute inset-y-0 left-0 right-0 flex items-center justify-between px-3 z-10">
-          <div className="hidden md:block text-white/50">
+          <div
+            className={cn(
+              "hidden md:block transition-opacity duration-200",
+              isFirstStory ? "text-white/20" : "text-white/50"
+            )}
+          >
             <ChevronLeft className="w-7 h-7" />
           </div>
           <div className="hidden md:block text-white/50">

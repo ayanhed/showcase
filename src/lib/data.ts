@@ -283,10 +283,4 @@ export const stories = [
   //   durationMs: 5000,
   //   cta: { label: "Projects", href: "/projects" },
   // },
-  // {
-  //   id: "s3",
-  //   type: "video",
-  //   src: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-  //   cta: { label: "Contact me", href: "/contact" },
-  // },
 ] as const;

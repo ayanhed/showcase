@@ -22,7 +22,7 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
   return (
     <Section spacing="lg">
       {/* Main Gradient Card */}
-      <Animate type="slideUp" duration={0.8} delay={0.2}>
+      <Animate type="slideUp" duration={0.8}>
         <div className="relative drop-shadow-lg p-[0.5px] rounded-3xl hero-container">
           {/* Background Image Layer */}
           <div className="absolute inset-0 rounded-3xl transition-all duration-700 background-image bg-[url('/hero-image.jpg')] bg-cover bg-center bg-no-repeat"></div>
@@ -89,7 +89,7 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
 
               {/* Right Side - Profile Image */}
               <div className="flex justify-center order-1 lg:order-2 flex-1">
-                <Animate type="scale" duration={0.8} delay={0.8}>
+                <Animate type="scale" duration={0.8} delay={0.3}>
                   <div className="relative group hover:animate-glow">
                     {/* Prominent Glow Effect - Behind Image */}
                     <div className="absolute inset-0 rounded-full bg-gradient-to-r from-green-400/40 via-purple-500/40 to-pink-500/40 blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-1000 group-hover:scale-110 -z-10"></div>
