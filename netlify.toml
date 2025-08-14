@@ -1,0 +1,18 @@
+[build]
+  command = "next build"
+  publish = ".next"
+
+  # Ensure Netlify Post Processing runs on the generated HTML so Forms are detected
+  [build.processing]
+    skip_processing = false
+
+  [build.processing.forms]
+    enabled = true
+
+# Use the official Next.js plugin (v5+) which integrates with OpenNext
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+  [plugins.inputs]
+    # Explicitly signal that forms should be supported via post-processing
+    enableForms = true
