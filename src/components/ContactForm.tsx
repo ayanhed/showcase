@@ -39,7 +39,6 @@ interface ContactFormProps {
   onSuccess?: (formData: ContactFormData) => void;
   onError?: (error: Error, formData: ContactFormData) => void;
   onSubmitStart?: (formData: ContactFormData) => void;
-  customEndpoint?: string;
   showSuccessMessage?: boolean;
   showErrorMessage?: boolean;
   resetOnSuccess?: boolean;
@@ -118,7 +117,6 @@ const ContactForm: React.FC<ContactFormProps> = ({
   onSuccess,
   onError,
   onSubmitStart,
-  customEndpoint = "/",
   showSuccessMessage = true,
   showErrorMessage = true,
   resetOnSuccess = true,
@@ -163,14 +161,6 @@ const ContactForm: React.FC<ContactFormProps> = ({
     },
   };
 
-  const encode = (data: Record<string, string>) => {
-    return Object.keys(data)
-      .map(
-        (key) => encodeURIComponent(key) + "=" + encodeURIComponent(data[key])
-      )
-      .join("&");
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -182,18 +172,17 @@ const ContactForm: React.FC<ContactFormProps> = ({
     onSubmitStart?.(formData);
 
     try {
-      // Create URLSearchParams for Netlify Forms
-      const formDataToSubmit = new URLSearchParams();
+      // Create FormData for Netlify Forms
+      const formDataToSubmit = new FormData();
       formDataToSubmit.append("form-name", formName);
       formDataToSubmit.append("name", formData.name);
       formDataToSubmit.append("email", formData.email);
       formDataToSubmit.append("message", formData.message);
 
-      // Submit to Netlify Forms
-      const response = await fetch(customEndpoint, {
+      // Submit to Netlify Forms using the current page URL
+      const response = await fetch(window.location.pathname, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: formDataToSubmit.toString(),
+        body: formDataToSubmit,
       });
 
       if (response.ok) {
