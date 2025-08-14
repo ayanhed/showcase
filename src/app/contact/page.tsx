@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense } from "react";
 import {
   Section,
   Button,
@@ -11,31 +11,74 @@ import {
   Animate,
   Grid,
   Stack,
+  Text,
+  Card,
 } from "@/components/ui";
 import ContactQuickLinks from "@/components/ContactQuickLinks";
+import { useSearchParams } from "next/navigation";
+
+function ContactFormContent() {
+  const searchParams = useSearchParams();
+  const isSuccess = searchParams.get("success") === "true";
+
+  return isSuccess ? (
+    <Card>
+      <div className="p-6 space-y-3">
+        <Text as="p" className="text-green-400 font-medium" aria-live="polite">
+          Thank you! Your message has been sent.
+        </Text>
+        <Text as="p" variant="muted">
+          I will get back to you as soon as possible.
+        </Text>
+      </div>
+    </Card>
+  ) : (
+    <form
+      name="contact"
+      method="POST"
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+      action="/contact?success=true"
+    >
+      <input type="hidden" name="form-name" value="contact" />
+      <p className="hidden">
+        <label>
+          Don’t fill this out: <input name="bot-field" />
+        </label>
+      </p>
+      <Stack spacing="lg">
+        <Grid cols={2} gap="md" responsive={true}>
+          <Input
+            type="text"
+            name="name"
+            required
+            placeholder="Your Name"
+            label="Name*"
+          />
+          <Input
+            type="email"
+            name="email"
+            required
+            placeholder="john@doe.com"
+            label="Email*"
+          />
+        </Grid>
+        <Textarea
+          name="message"
+          required
+          rows={4}
+          placeholder="Hello there, I would like to ask you about..."
+          label="Message*"
+        />
+        <Stack direction="horizontal" justify="end">
+          <Button type="submit">Send</Button>
+        </Stack>
+      </Stack>
+    </form>
+  );
+}
 
 export default function Contact() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission here
-    console.log("Form submitted:", formData);
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
   return (
     <div id="contact">
       {/* Hero Section */}
@@ -54,42 +97,9 @@ export default function Contact() {
             once={true}
             className="dark-card p-8 mb-12"
           >
-            <form onSubmit={handleSubmit}>
-              <Stack spacing="lg">
-                <Grid cols={2} gap="md" responsive={true}>
-                  <Input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    placeholder="Your Name"
-                    label="Name*"
-                  />
-                  <Input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    placeholder="john@doe.com"
-                    label="Email*"
-                  />
-                </Grid>
-                <Textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  required
-                  rows={4}
-                  placeholder="Hello there, I would like to ask you about..."
-                  label="Message*"
-                />
-                <Stack direction="horizontal" justify="end">
-                  <Button type="submit">Send</Button>
-                </Stack>
-              </Stack>
-            </form>
+            <Suspense fallback={null}>
+              <ContactFormContent />
+            </Suspense>
           </Animate>
 
           {/* Alternative Contact Methods */}

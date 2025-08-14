@@ -10,12 +10,6 @@ interface ContactFormProps {
 }
 
 const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission
-    console.log("Form submitted");
-  };
-
   return (
     <Animate
       type="slideUp"
@@ -25,23 +19,40 @@ const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
       className={className}
     >
       <Card>
-        <form onSubmit={handleSubmit}>
+        <form
+          name="contact"
+          method="POST"
+          data-netlify="true"
+          netlify-honeypot="bot-field"
+          action="/contact?success=true"
+        >
+          {/* Netlify form hidden fields */}
+          <input type="hidden" name="form-name" value="contact" />
+          <p className="hidden">
+            <label>
+              Don’t fill this out: <input name="bot-field" />
+            </label>
+          </p>
+
           <Stack spacing="lg">
             <Grid cols={2} gap="md" responsive={true}>
               <Input
                 type="text"
+                name="name"
                 placeholder="Your Name"
                 label="Name*"
                 required
               />
               <Input
                 type="email"
+                name="email"
                 placeholder="john@doe.com"
                 label="Email*"
                 required
               />
             </Grid>
             <Textarea
+              name="message"
               rows={4}
               placeholder="Hello there, I would like to ask you about..."
               label="Message*"

@@ -97,6 +97,13 @@ export default function RootLayout({
                       `,
           }}
         />
+        {/* Hidden Netlify form to ensure build-time detection */}
+        <form name="contact" data-netlify="true" netlify-honeypot="bot-field" hidden>
+          <input type="hidden" name="form-name" value="contact" />
+          <input type="text" name="name" />
+          <input type="email" name="email" />
+          <textarea name="message" />
+        </form>
         <Navigation />
         <div
           style={{ width: "100vw", height: "100vh", position: "fixed" }}
