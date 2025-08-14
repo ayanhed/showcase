@@ -8,6 +8,8 @@ import { personalInfo, skills, projects, contactInfo } from "@/lib/data";
 import Hero from "@/components/Hero";
 import TechnologiesSection from "@/components/TechnologiesSection";
 import ContactForm from "@/components/ContactForm";
+import JsonLd from "@/components/JsonLd";
+import { getHomePageSchemas } from "@/lib/jsonld";
 import {
   Section,
   Heading,
@@ -24,6 +26,9 @@ import ContactQuickLinks from "@/components/ContactQuickLinks";
 export default function Home() {
   return (
     <div id="home">
+      {/* JSON-LD Structured Data */}
+      <JsonLd data={getHomePageSchemas()} />
+      
       {/* Hero Section - Now using our component */}
       <Hero personalInfo={personalInfo} />
       {/* About Me Section - Refactored with components */}

@@ -3,10 +3,15 @@
 import { Section, Container, HeroSection, Animate } from "@/components/ui";
 import ContactForm from "@/components/ContactForm";
 import ContactQuickLinks from "@/components/ContactQuickLinks";
+import JsonLd from "@/components/JsonLd";
+import { getContactPageSchemas } from "@/lib/jsonld";
 
 export default function Contact() {
   return (
     <div id="contact">
+      {/* JSON-LD Structured Data */}
+      <JsonLd data={getContactPageSchemas()} />
+      
       {/* Hero Section */}
       <HeroSection
         title="Contact me"

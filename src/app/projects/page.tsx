@@ -10,10 +10,15 @@ import {
   Stack,
 } from "@/components/ui";
 import ProjectCard from "@/components/ProjectCard";
+import JsonLd from "@/components/JsonLd";
+import { getProjectsPageSchemas } from "@/lib/jsonld";
 
 export default function Projects() {
   return (
     <div id="projects">
+      {/* JSON-LD Structured Data */}
+      <JsonLd data={getProjectsPageSchemas()} />
+      
       {/* Hero Section */}
       <HeroSection
         title="My Projects"

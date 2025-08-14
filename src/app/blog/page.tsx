@@ -11,10 +11,15 @@ import {
   Stack,
 } from "@/components/ui";
 import BlogPostCard from "@/components/BlogPostCard";
+import JsonLd from "@/components/JsonLd";
+import { getBlogPageSchemas } from "@/lib/jsonld";
 
 export default function Blog() {
   return (
     <div id="blog">
+      {/* JSON-LD Structured Data */}
+      <JsonLd data={getBlogPageSchemas()} />
+      
       {/* Hero Section */}
       <HeroSection
         title="Tech Blog"

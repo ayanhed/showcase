@@ -15,6 +15,8 @@ import {
   Text,
 } from "@/components/ui";
 import TechnologiesSection from "@/components/TechnologiesSection";
+import JsonLd from "@/components/JsonLd";
+import { getAboutPageSchemas } from "@/lib/jsonld";
 
 // Reusable section header component
 const SectionHeader = ({
@@ -204,6 +206,9 @@ const LanguagesGrid = () => (
 export default function About() {
   return (
     <div id="about">
+      {/* JSON-LD Structured Data */}
+      <JsonLd data={getAboutPageSchemas()} />
+      
       {/* Hero Section */}
       <HeroSection title="About Me">
         <AboutContent />
