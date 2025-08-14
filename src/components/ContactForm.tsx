@@ -4,7 +4,7 @@ import Input from "./ui/Input";
 import Textarea from "./ui/Textarea";
 import Button from "./ui/Button";
 import { Animate, Grid, Stack } from "./ui";
-import { CheckCircle, X } from "lucide-react";
+import { X } from "lucide-react";
 import Image from "next/image";
 
 interface FormField {
@@ -101,7 +101,7 @@ const SuccessOverlay: React.FC<SuccessOverlayProps> = ({
 
 const ContactForm: React.FC<ContactFormProps> = ({
   className,
-  formName = "contact-form",
+  formName = "contact",
   title,
   description,
   showCard = true,
@@ -182,13 +182,18 @@ const ContactForm: React.FC<ContactFormProps> = ({
     onSubmitStart?.(formData);
 
     try {
+      // Create URLSearchParams for Netlify Forms
+      const formDataToSubmit = new URLSearchParams();
+      formDataToSubmit.append("form-name", formName);
+      formDataToSubmit.append("name", formData.name);
+      formDataToSubmit.append("email", formData.email);
+      formDataToSubmit.append("message", formData.message);
+
+      // Submit to Netlify Forms
       const response = await fetch(customEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: encode({
-          "form-name": formName,
-          ...formData,
-        }),
+        body: formDataToSubmit.toString(),
       });
 
       if (response.ok) {
@@ -212,7 +217,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
         throw new Error("Form submission failed");
       }
     } catch (error) {
-      console.error("Form submission error:", error);
+      console.error("Error submitting form:", error);
       const errorObj =
         error instanceof Error ? error : new Error("Unknown error");
 
@@ -261,11 +266,12 @@ const ContactForm: React.FC<ContactFormProps> = ({
         name={formName}
         method="POST"
         data-netlify="true"
+        data-netlify-honeypot="bot-field"
         onSubmit={handleSubmit}
       >
         {/* Hidden input for Netlify forms */}
         <input type="hidden" name="form-name" value={formName} />
-
+        <input type="hidden" name="bot-field" />
         <Stack spacing="lg">
           {/* Title and Description */}
           {title && (
