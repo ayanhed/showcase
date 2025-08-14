@@ -35,7 +35,7 @@ function urlBase64ToUint8Array(base64String: string) {
 }
 
 export default function PushNotificationManager() {
-  const [status, setStatus] = useState<
+  const [, setStatus] = useState<
     "idle" | "subscribing" | "subscribed" | "error"
   >("idle");
 

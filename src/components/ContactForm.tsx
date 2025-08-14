@@ -6,55 +6,11 @@ import Button from "./ui/Button";
 import { Animate, Grid, Stack } from "./ui";
 import { X } from "lucide-react";
 import Image from "next/image";
-
-interface FormField {
-  name: string;
-  label: string;
-  placeholder: string;
-  type?: string;
-  required?: boolean;
-  rows?: number;
-}
-
-interface ContactFormProps {
-  className?: string;
-  formName?: string;
-  title?: string;
-  description?: string;
-  showCard?: boolean;
-  showAnimation?: boolean;
-  animationType?: "slideUp" | "slideDown" | "slideLeft" | "slideRight" | "fade";
-  animationDuration?: number;
-  animationDelay?: number;
-  submitButtonText?: string;
-  submitButtonLoadingText?: string;
-  successMessage?: string;
-  errorMessage?: string;
-  fields?: {
-    name?: Partial<FormField>;
-    email?: Partial<FormField>;
-    message?: Partial<FormField>;
-  };
-  layout?: "grid" | "stack";
-  onSuccess?: (formData: ContactFormData) => void;
-  onError?: (error: Error, formData: ContactFormData) => void;
-  onSubmitStart?: (formData: ContactFormData) => void;
-  showSuccessMessage?: boolean;
-  showErrorMessage?: boolean;
-  resetOnSuccess?: boolean;
-  disabled?: boolean;
-}
-
-interface ContactFormData {
-  name: string;
-  email: string;
-  message: string;
-}
-
-interface SubmissionState {
-  status: "idle" | "submitting" | "success" | "error";
-  message: string;
-}
+import {
+  ContactFormProps,
+  ContactFormData,
+  SubmissionState,
+} from "./ContactForm.types";
 
 // Success Overlay Component
 interface SuccessOverlayProps {

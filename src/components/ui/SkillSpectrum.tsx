@@ -205,13 +205,6 @@ export default function SkillSpectrum({
     }
   }, [autoPlayActive, currentAutoPlayIndex, techData]);
 
-  // User interaction handlers
-  const handleUserInteraction = () => {
-    if (autoPlayActive) {
-      setAutoPlayActive(false);
-    }
-  };
-
   const handleDotHover = (tech: TechnologyDatum) => {
     setHovered(tech);
   };

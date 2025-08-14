@@ -3,7 +3,6 @@ import type { Viewport } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
-import { contactInfo, personalInfo } from "../lib/data";
 import Footer from "../components/Footer";
 import * as data from "@/lib/data";
 import Providers from "./providers";
@@ -22,6 +21,7 @@ const inter = Inter({
 const title = `${data.personalInfo.name} - ${data.personalInfo.title}`;
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://ayanhedayati.com"),
   title: title,
   description: data.personalInfo.about,
   keywords: [

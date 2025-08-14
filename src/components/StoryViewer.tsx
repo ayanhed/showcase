@@ -43,7 +43,6 @@ interface StoryViewerProps {
 }
 
 const DEFAULT_DURATION = 5000;
-const ANIMATION_DURATION = 300;
 const PROGRESS_UPDATE_INTERVAL = 16; // ~60fps
 
 // Helper functions

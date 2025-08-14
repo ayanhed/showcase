@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, X, Github, Linkedin, Instagram } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Menu, Github, Linkedin, Instagram } from "lucide-react";
+import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { contactInfo } from "@/lib/data";
 import MobileNavigation from "./MobileNavigation";

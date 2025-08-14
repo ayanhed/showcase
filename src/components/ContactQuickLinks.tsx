@@ -1,6 +1,6 @@
 import { Linkedin, Mail } from "lucide-react";
 import { contactInfo } from "../lib/data";
-import { Animate, Button, Link, Stack, Text } from "./ui";
+import { Animate, Button, Stack, Text } from "./ui";
 
 export default function ContactQuickLinks() {
   return (
