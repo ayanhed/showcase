@@ -66,6 +66,7 @@ export interface ProfilePage extends BaseSchema {
   about?: Person;
   datePublished?: string;
   dateModified?: string;
+  mainEntity?: Person;
 }
 
 export interface BlogPosting extends BaseSchema {
@@ -246,6 +247,7 @@ export const createProfilePage = (
     about: createPerson(),
     datePublished: new Date().toISOString(),
     dateModified: new Date().toISOString(),
+    mainEntity: createPerson(),
   };
 };
 
