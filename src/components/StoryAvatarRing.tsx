@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface StoryAvatarRingProps {
@@ -33,12 +34,14 @@ export default function StoryAvatarRing({
       <div className={cn("absolute inset-0 rounded-full p-[3px]", border)}>
         <div className="w-full h-full rounded-full bg-black" />
       </div>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src={src}
         alt={alt}
+        width={size}
+        height={size}
         className="rounded-full border-2 border-black object-cover"
         style={{ width: size, height: size }}
+        unoptimized
       />
     </div>
   );

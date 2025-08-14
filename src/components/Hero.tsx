@@ -9,7 +9,7 @@ import Text from "./ui/Text";
 import Animate from "./ui/Animate";
 import Icon from "./ui/Icon";
 import { personalInfo } from "@/lib/data";
-import { StoryViewer } from "@/components/stories";
+import StoryViewer from "@/components/StoryViewer";
 import { stories as defaultStories } from "@/lib/data";
 import { MapPin } from "lucide-react";
 
@@ -118,23 +118,25 @@ const Hero: React.FC<HeroProps> = ({ personalInfo }) => {
                         className="w-48 h-48 lg:w-64 lg:h-64 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl relative group-hover:shadow-[0_0_50px_rgba(16,185,129,0.3)] transition-all duration-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black focus:ring-purple-500"
                       >
                         {/* Base Image */}
-                        <Image
-                          src={personalInfo.profileImage || "/profile.jpg"}
-                          alt={`${personalInfo.name} profile`}
-                          width={320}
-                          height={320}
-                          className="object-cover w-full h-full transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
-                          priority
-                          onError={(e) => {
-                            // Fallback to simple SVG if image fails to load
-                            const target = e.target as HTMLImageElement;
-                            target.src = "/profile.jpg";
-                          }}
-                        />
+                        <Animate type="fade" duration={0.4} delay={0.6}>
+                          <Image
+                            src={personalInfo.profileImage || "/profile.jpg"}
+                            alt={`${personalInfo.name} profile`}
+                            width={320}
+                            height={320}
+                            className="object-cover w-full h-full transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
+                            priority
+                            onError={(e) => {
+                              // Fallback to simple SVG if image fails to load
+                              const target = e.target as HTMLImageElement;
+                              target.src = "/profile.jpg";
+                            }}
+                          />
+                        </Animate>
                       </button>
 
                       {/* Floating Badge - Working Remotely */}
-                      <Animate type="slideUp" duration={0.8} delay={0.8}>
+                      <Animate type="slideUp" duration={0.3} delay={0.4}>
                         <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 z-20 transition-all duration-700 group-hover:scale-110 group-hover:-translate-y-1">
                           <div className="flex items-center justify-center gap-2 px-3 py-2 lg:px-4 lg:py-2.5 rounded-full backdrop-blur-md border border-white/20 shadow-lg shadow-black/25 transition-all duration-700 group-hover:shadow-xl group-hover:shadow-black/30 group-hover:bg-white/15 group-hover:border-white/30">
                             <Icon

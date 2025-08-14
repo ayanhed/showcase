@@ -85,7 +85,7 @@ const ContactButtons = () => (
         <a href="/contact">Get in Touch</a>
       </Button>
       <Button variant="secondary" icon={ArrowRight} iconPosition="right">
-        <a href="#">Download CV</a>
+        Request CV
       </Button>
       <Button variant="secondary" icon={ArrowRight} iconPosition="right">
         <a href={contactInfo.github} target="_blank" rel="noopener noreferrer">
