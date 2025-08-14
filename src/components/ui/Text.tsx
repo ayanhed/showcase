@@ -12,7 +12,7 @@ interface TextProps {
 }
 
 const sizeClasses = {
-  xs: "text-sm mb-1", // increased from text-xs to text-sm
+  xs: "text-sm mb-0 font-mono uppercase", // increased from text-xs to text-sm
   sm: "text-base mb-1 leading-snug", // increased from text-sm to text-base
   md: "text-lg mb-2 leading-loose", // increased from text-base to text-lg
   lg: "text-xl mb-4 leading-loose", // increased from text-lg to text-xl

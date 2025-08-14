@@ -15,11 +15,23 @@ export default function ContactQuickLinks() {
         Or contact me with...
       </Text>
       <Stack direction="horizontal" spacing="sm" className="justify-center">
-        <Button variant="secondary" icon={Mail}>
-          <Link href={`mailto:${contactInfo.email}`}>Email</Link>
+        <Button
+          variant="secondary"
+          icon={Mail}
+          as="a"
+          target="_blank"
+          href={`mailto:${contactInfo.email}`}
+        >
+          Email
         </Button>
-        <Button variant="secondary" icon={Linkedin}>
-          <Link href={contactInfo.linkedin}>LinkedIn</Link>
+        <Button
+          variant="secondary"
+          icon={Linkedin}
+          as="a"
+          target="_blank"
+          href={contactInfo.linkedin}
+        >
+          LinkedIn
         </Button>
       </Stack>
     </Animate>

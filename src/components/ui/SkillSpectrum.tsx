@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import Badge from "./Badge";
+import Button from "./Button";
 
 export interface TechnologyDatum {
   name: string;
@@ -244,7 +245,7 @@ export default function SkillSpectrum({
   }, [width]);
 
   // Derived layout values for declarative SVG
-  const margin = { top: 32, right: 24, bottom: 28, left: 24 } as const;
+  const margin = { top: 32, right: 0, bottom: 28, left: 0 } as const;
   const outerWidth = Math.max(320, width);
   const innerWidth = outerWidth - margin.left - margin.right;
 
@@ -491,7 +492,7 @@ export default function SkillSpectrum({
             y2={axisY}
             stroke="#fff"
             strokeOpacity={0.5}
-            strokeWidth={1.5}
+            strokeWidth={0.5}
           />
 
           {/* Boundary ticks */}
@@ -649,21 +650,15 @@ export default function SkillSpectrum({
       {/* Interactive tech list */}
       <div className="mt-4 flex flex-wrap gap-2 justify-center">
         {techData.map((t) => (
-          <button
+          <Button
+            pill
             key={t.name}
-            type="button"
+            variant="secondary"
+            size="md"
             onMouseEnter={() => handleDotHover(t)}
             onMouseLeave={handleDotLeave}
             onFocus={() => handleDotHover(t)}
             onBlur={handleDotLeave}
-            className={cn(
-              "px-4 py-2.5 rounded-full cursor-pointer",
-              "bg-white/10 text-white hover:bg-white/20 transition-colors",
-              "flex items-center gap-2 transition-transform duration-200 will-change-transform",
-              hovered && hovered.name === t.name
-                ? "scale-[1.02]"
-                : "hover:scale-[1.02]"
-            )}
             aria-label={`${t.name} (${sideForValue(t.value)}, ${labelForValue(
               t.value
             )})`}
@@ -677,8 +672,8 @@ export default function SkillSpectrum({
               width={25}
               height={25}
             />
-            <span className="text-md font-medium">{t.name}</span>
-          </button>
+            <span className="text-md font-medium ml-2">{t.name}</span>
+          </Button>
         ))}
       </div>
     </div>

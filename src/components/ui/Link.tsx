@@ -9,19 +9,15 @@ interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
 }
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
-  ({ className, variant = "default", children, ...props }, ref) => {
+  ({ variant = "default", children, ...props }, ref) => {
     const variants = {
-      default: "text-blue-400 hover:text-blue-300 transition-colors",
+      default: "text-white hover:text-purple-400 transition-colors",
       button: "btn-primary inline-flex items-center gap-2",
       underline: "text-blue-400 hover:text-blue-300 font-medium underline",
     };
 
     return (
-      <NextLink
-        ref={ref}
-        className={cn(variants[variant], className)}
-        {...props}
-      >
+      <NextLink ref={ref} className={cn(variants[variant])} {...props}>
         {children}
       </NextLink>
     );
