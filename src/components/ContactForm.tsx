@@ -135,11 +135,17 @@ const ContactForm: React.FC<ContactFormProps> = ({
       formDataToSubmit.append("email", formData.email);
       formDataToSubmit.append("message", formData.message);
 
-      // Submit to Netlify Forms using the current page URL
-      const response = await fetch(window.location.pathname, {
+      // Submit to Netlify Forms using the static HTML file
+      console.log("Submitting form to:", "/contact-forms.html");
+      console.log("Form data:", Object.fromEntries(formDataToSubmit));
+
+      const response = await fetch("/contact-forms.html", {
         method: "POST",
         body: formDataToSubmit,
       });
+
+      console.log("Response status:", response.status);
+      console.log("Response ok:", response.ok);
 
       if (response.ok) {
         setSubmissionState({
@@ -159,7 +165,11 @@ const ContactForm: React.FC<ContactFormProps> = ({
           });
         }
       } else {
-        throw new Error("Form submission failed");
+        const errorText = await response.text();
+        console.error("Form submission failed:", response.status, errorText);
+        throw new Error(
+          `Form submission failed: ${response.status} ${response.statusText}`
+        );
       }
     } catch (error) {
       console.error("Error submitting form:", error);

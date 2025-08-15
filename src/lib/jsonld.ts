@@ -246,8 +246,8 @@ export const createProfilePage = (
     inLanguage: "en-US",
     isPartOf: createWebsite(),
     about: createPerson(),
-    datePublished: new Date().toISOString(),
-    dateModified: new Date().toISOString(),
+    datePublished: "2024-01-01T00:00:00.000Z",
+    dateModified: "2024-01-01T00:00:00.000Z",
     mainEntity: createPerson(),
   };
 };
@@ -523,7 +523,7 @@ export const createProfessionalProfile = () => {
     "@context": "https://schema.org",
     "@type": "ProfilePage",
     dateCreated: "2024-01-01",
-    dateModified: new Date().toISOString(),
+    dateModified: "2024-01-01T00:00:00.000Z",
     mainEntity: {
       ...person,
       hasOccupation: {

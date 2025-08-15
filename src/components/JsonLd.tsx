@@ -1,4 +1,4 @@
-import { BaseSchema } from '@/lib/jsonld';
+import { BaseSchema } from "@/lib/jsonld";
 
 interface JsonLdProps {
   data: BaseSchema | BaseSchema[];
@@ -6,14 +6,14 @@ interface JsonLdProps {
 
 /**
  * JsonLd Component
- * 
+ *
  * A centralized component for injecting JSON-LD structured data into pages.
  * This component follows SEO best practices and ensures consistent schema markup.
- * 
+ *
  * Usage:
  * <JsonLd data={getHomePageSchemas()} />
  * <JsonLd data={createBlogPosting(...)} />
- * 
+ *
  * Features:
  * - Accepts single schema or array of schemas
  * - Safely serializes data with proper escaping
@@ -22,13 +22,14 @@ interface JsonLdProps {
  */
 export default function JsonLd({ data }: JsonLdProps) {
   const schemas = Array.isArray(data) ? data : [data];
-  
+
   return (
     <>
       {schemas.map((schema, index) => (
         <script
           key={`jsonld-${index}`}
           type="application/ld+json"
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(schema, null, 0),
           }}
@@ -40,13 +41,13 @@ export default function JsonLd({ data }: JsonLdProps) {
 
 /**
  * JsonLdScript Component
- * 
+ *
  * Alternative component for inline script injection when you need more control
  * over the placement or want to combine with other head elements.
  */
 export function JsonLdScript({ data }: JsonLdProps) {
   const schemas = Array.isArray(data) ? data : [data];
-  
+
   return (
     <>
       {schemas.map((schema, index) => {
@@ -68,17 +69,17 @@ export function JsonLdScript({ data }: JsonLdProps) {
 
 /**
  * useJsonLd Hook
- * 
+ *
  * A hook for dynamically adding JSON-LD to components.
  * Useful for client-side rendered components that need structured data.
  */
 export function useJsonLd(data: BaseSchema | BaseSchema[]) {
   const schemas = Array.isArray(data) ? data : [data];
-  
+
   // This is primarily for SSR/SSG - client-side updates would need useEffect
   return schemas.map((schema, index) => ({
     key: `jsonld-hook-${index}`,
-    type: 'application/ld+json',
+    type: "application/ld+json",
     content: JSON.stringify(schema, null, 0),
   }));
 }
