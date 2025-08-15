@@ -1,6 +1,5 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
 import { personalInfo, skills, experience, contactInfo } from "@/lib/data";
 import {
   Section,
@@ -198,7 +197,7 @@ export default function About() {
     <div id="about">
       {/* JSON-LD Structured Data */}
       <JsonLd data={getAboutPageSchemas()} />
-      
+
       {/* Hero Section */}
       <HeroSection title="About Me" />
       <Animate type="slideUp" duration={0.8} once={true}>

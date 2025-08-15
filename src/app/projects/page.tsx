@@ -8,7 +8,6 @@ import {
   CallToAction,
   Animate,
   Stack,
-  Text,
   Alert,
 } from "@/components/ui";
 import ProjectCard from "@/components/ProjectCard";
@@ -20,7 +19,7 @@ export default function Projects() {
     <div id="projects">
       {/* JSON-LD Structured Data */}
       <JsonLd data={getProjectsPageSchemas()} />
-      
+
       {/* Hero Section */}
       <HeroSection
         title="My Projects"
