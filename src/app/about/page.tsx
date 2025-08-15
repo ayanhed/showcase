@@ -76,58 +76,48 @@ const TimelineDot = () => (
 
 // Contact buttons component
 const ContactButtons = () => (
-  <Animate type="slideUp" duration={0.8} delay={0.4} once={true}>
-    <Stack
-      direction="horizontal"
-      spacing="md"
-      className="justify-center"
-      wrap={true}
-    >
-      <Button icon={ArrowRight} iconPosition="right">
-        <a href="/contact">Get in Touch</a>
+  <Stack direction="horizontal" spacing="md" justify="between">
+    <Stack direction="horizontal" spacing="md">
+      <Button as="a" href="/contact">
+        Get in Touch
       </Button>
-      <Button variant="secondary" icon={ArrowRight} iconPosition="right">
-        Request CV
-      </Button>
-      <Button variant="secondary" icon={ArrowRight} iconPosition="right">
-        <a href={contactInfo.github} target="_blank" rel="noopener noreferrer">
-          GitHub
-        </a>
+      <Button
+        as="a"
+        href={contactInfo.github}
+        target="_blank"
+        rel="noopener noreferrer"
+        variant="secondary"
+      >
+        GitHub
       </Button>
     </Stack>
-  </Animate>
+    <Stack direction="horizontal" spacing="md" justify="end">
+      <Button variant="secondary">Request CV</Button>
+    </Stack>
+  </Stack>
 );
 
 // About text content component
 const AboutContent = () => (
-  <Animate
-    type="slideUp"
-    duration={0.8}
-    delay={0.2}
-    once={true}
-    className="prose prose-lg max-w-none"
-  >
-    <Stack spacing="lg">
-      <Text variant="muted">
-        I&apos;m {personalInfo.name.split(" ")[0]}, a passionate developer who
-        loves building modern web applications that solve real-world problems.
-        With over 8 years of experience, I&apos;ve worked on projects ranging
-        from small business websites to enterprise-level applications.
-      </Text>
-      <Text variant="muted">
-        My expertise lies in full-stack development with a focus on React,
-        Node.js, and TypeScript. I have extensive experience with cloud
-        platforms like Azure and AWS, and I&apos;m well-versed in DevOps
-        practices including CI/CD, Docker, and infrastructure management.
-      </Text>
-      <Text variant="muted">
-        I believe in writing clean, maintainable code and delivering solutions
-        that not only meet requirements but exceed expectations. My approach
-        combines technical excellence with a deep understanding of business
-        needs.
-      </Text>
-    </Stack>
-  </Animate>
+  <Stack spacing="lg">
+    <Text variant="muted">
+      I&apos;m {personalInfo.name.split(" ")[0]}, a passionate developer who
+      loves building modern web applications that solve real-world problems.
+      With over 8 years of experience, I&apos;ve worked on projects ranging from
+      small business websites to enterprise-level applications.
+    </Text>
+    <Text variant="muted">
+      My expertise lies in full-stack development with a focus on React,
+      Node.js, and TypeScript. I have extensive experience with cloud platforms
+      like Azure and AWS, and I&apos;m well-versed in DevOps practices including
+      CI/CD, Docker, and infrastructure management.
+    </Text>
+    <Text variant="muted">
+      I believe in writing clean, maintainable code and delivering solutions
+      that not only meet requirements but exceed expectations. My approach
+      combines technical excellence with a deep understanding of business needs.
+    </Text>
+  </Stack>
 );
 
 // Experience timeline component
@@ -210,10 +200,15 @@ export default function About() {
       <JsonLd data={getAboutPageSchemas()} />
       
       {/* Hero Section */}
-      <HeroSection title="About Me">
-        <AboutContent />
-        <ContactButtons />
-      </HeroSection>
+      <HeroSection title="About Me" />
+      <Animate type="slideUp" duration={0.8} once={true}>
+        <Stack spacing="lg">
+          <Card>
+            <AboutContent />
+          </Card>
+          <ContactButtons />
+        </Stack>
+      </Animate>
 
       {/* Technologies Section */}
       <TechnologiesSection technologies={skills.technologies} />

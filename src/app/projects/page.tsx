@@ -8,6 +8,8 @@ import {
   CallToAction,
   Animate,
   Stack,
+  Text,
+  Alert,
 } from "@/components/ui";
 import ProjectCard from "@/components/ProjectCard";
 import JsonLd from "@/components/JsonLd";
@@ -29,6 +31,9 @@ export default function Projects() {
       <Section>
         <Container>
           <Stack spacing="xl" className="space-y-8">
+            <Alert variant="info">
+              I’m refreshing this section — new projects will be added soon.
+            </Alert>
             {projects.map((project, index) => (
               <Animate
                 key={project.title}

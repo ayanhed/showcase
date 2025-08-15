@@ -49,7 +49,7 @@ export default function Stack({
   return (
     <div
       className={cn(
-        "flex",
+        "flex w-full",
         isHorizontal ? "flex-row" : "flex-col",
         alignClasses[align],
         justifyClasses[justify],

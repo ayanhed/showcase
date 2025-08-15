@@ -7,7 +7,7 @@ import Text from "./ui/Text";
 import Heading from "./ui/Heading";
 import Stack from "./ui/Stack";
 import Grid from "./ui/Grid";
-import { personalInfo, contactInfo } from "@/lib/data";
+import { personalInfo, contactInfo, projects } from "@/lib/data";
 import {
   Github,
   Mail,
@@ -17,6 +17,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { Button } from "./ui";
+import Section from "./ui/Section";
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -61,42 +62,47 @@ const Footer: React.FC = () => {
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
 
-      <Container className="relative z-10">
-        <Stack className="py-16 lg:py-20">
-          {/* Main footer content */}
-          <Grid cols={4} gap="xl" className="mb-12">
-            {/* Brand section */}
-            <div className="lg:col-span-2">
+      <Section>
+        <Container>
+          <Stack className="">
+            {/* Main footer content */}
+            <Grid
+              gap="xl"
+              responsive={false}
+              className="mb-12 grid-cols-1 lg:grid-cols-4"
+            >
+              {/* Brand section */}
               <Stack spacing="lg">
                 <Stack spacing="md">
-                  <Heading
-                    level={3}
-                    showDot
-                    className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent"
-                  >
-                    {personalInfo.name}
-                  </Heading>
+                  <Stack spacing="md" className="lg:hidden">
+                    <Heading level={3} showDot>
+                      {personalInfo.name}
+                    </Heading>
+                  </Stack>
+                  <div className="hidden lg:block">
+                    {personalInfo.name.split(" ").map((word, idx) => (
+                      <Heading
+                        key={idx}
+                        level={3}
+                        className="mb-0"
+                        showDot={idx === 1}
+                      >
+                        {word}
+                      </Heading>
+                    ))}
+                  </div>
                   <Text
                     size="lg"
                     variant="muted"
                     className="max-w-md leading-relaxed"
                   >
-                    {personalInfo.about}
+                    {personalInfo.title}
                   </Text>
                 </Stack>
-
-                {/* Mission statement */}
-                <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-full">
-                  <Text size="sm" weight="medium" className="text-purple-300">
-                    {personalInfo.mission}
-                  </Text>
-                </div>
               </Stack>
-            </div>
 
-            {/* Quick links */}
-            <div>
-              <Stack spacing="lg">
+              {/* Quick links */}
+              <Stack spacing="sm">
                 <Heading level={5}>Quick Links</Heading>
                 <Stack spacing="sm">
                   {quickLinks.map((link) => (
@@ -113,11 +119,30 @@ const Footer: React.FC = () => {
                   ))}
                 </Stack>
               </Stack>
-            </div>
 
-            {/* Contact & Social */}
-            <div>
-              <Stack spacing="lg">
+              {/* Projects */}
+              <Stack spacing="sm">
+                <Heading level={5}>Projects</Heading>
+                <Stack spacing="sm">
+                  {projects.slice(0, 4).map((project) => (
+                    <Link key={project.slug} href={`/projects/${project.slug}`}>
+                      <Stack direction="horizontal" spacing="sm" align="center">
+                        {project.title}
+                        <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200" />
+                      </Stack>
+                    </Link>
+                  ))}
+                  <Link href="/projects">
+                    <Stack direction="horizontal" spacing="sm" align="center">
+                      View More...
+                      <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200" />
+                    </Stack>
+                  </Link>
+                </Stack>
+              </Stack>
+
+              {/* Contact & Social */}
+              <Stack spacing="sm">
                 <Heading level={5}>Connect</Heading>
                 <Stack spacing="lg">
                   {/* Contact info */}
@@ -166,40 +191,46 @@ const Footer: React.FC = () => {
                   </Stack>
                 </Stack>
               </Stack>
-            </div>
-          </Grid>
+            </Grid>
 
-          {/* Bottom section */}
-          <div className="pt-8 border-t border-white/5 w-full">
-            <Stack
-              direction="horizontal"
-              justify="between"
-              align="center"
-              className="flex-col sm:flex-row space-y-4 sm:space-y-0"
-            >
-              {/* Copyright */}
-              <Stack direction="horizontal" spacing="sm" align="center">
-                <Text size="xs" variant="muted">
-                  © {currentYear} {personalInfo.name}. All rights reserved.
-                </Text>
-              </Stack>
+            {/* Bottom section */}
+            <div className="pt-8 border-t border-white/5 w-full">
+              <Stack
+                direction="horizontal"
+                justify="between"
+                align="center"
+                className="flex-col sm:flex-row space-y-4 sm:space-y-0"
+              >
+                {/* Copyright */}
+                <Stack direction="horizontal" spacing="sm" align="center">
+                  <Text size="xs" variant="muted">
+                    © {currentYear} {personalInfo.name}. All rights reserved.
+                  </Text>
+                </Stack>
 
-              {/* Additional links */}
-              <Stack direction="horizontal" spacing="lg" align="center">
-                <Link
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
+                {/* Additional links */}
+                <Stack
+                  direction="horizontal"
+                  spacing="lg"
+                  justify="end"
+                  align="end"
                 >
-                  Back to top
-                </Link>
+                  <Link
+                    href="#"
+                    variant="muted"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                  >
+                    Back to top
+                  </Link>
+                </Stack>
               </Stack>
-            </Stack>
-          </div>
-        </Stack>
-      </Container>
+            </div>
+          </Stack>
+        </Container>
+      </Section>
     </footer>
   );
 };

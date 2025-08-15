@@ -4,6 +4,7 @@ import Section from "./Section";
 import Heading from "./Heading";
 import Container from "./Container";
 import Text from "./Text";
+import Stack from "./Stack";
 
 interface HeroSectionProps {
   title: string;
@@ -35,7 +36,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
               {subtitle}
             </Text>
           )}
-          {children}
+          <Stack spacing="lg">{children}</Stack>
         </motion.div>
       </Container>
     </Section>

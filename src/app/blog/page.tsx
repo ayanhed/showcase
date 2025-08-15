@@ -29,13 +29,7 @@ export default function Blog() {
       {/* Blog Posts */}
       <Section>
         <Container>
-          <Animate
-            type="slideUp"
-            duration={0.8}
-            delay={0.2}
-            once={true}
-            className="mb-8"
-          >
+          <Animate type="slideUp" duration={0.8} once={true} className="mb-8">
             <Heading level={2} className="mb-6" showDot>
               All Posts
             </Heading>
@@ -46,7 +40,7 @@ export default function Blog() {
               <Animate
                 key={post.slug}
                 type="slideUp"
-                delay={index * 0.1}
+                delay={index === 0 ? 0 : index * 0.1}
                 once={true}
               >
                 <BlogPostCard post={post} index={index} />

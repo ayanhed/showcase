@@ -18,3 +18,4 @@ export { default as Icon } from "./Icon";
 export { default as Text } from "./Text";
 export { default as SkillSpectrum } from "./SkillSpectrum";
 export { default as Dot } from "./Dot";
+export { default as Alert } from "./Alert";
