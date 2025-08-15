@@ -4,24 +4,20 @@ import { useState, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Check, Upload, Download, Share2 } from 'lucide-react';
 import CostNotice from './CostNotice';
 import { type QuoteSpec } from '../lib/openai';
-
-// Import preset data
-import projectTypes from '../presets/projectTypes.json';
-import brandVibes from '../presets/brandVibes.json';
-import layouts from '../presets/layouts.json';
-import modules from '../presets/modules.json';
-import themes from '../presets/themes.json';
+import { quoteWizardConfig } from '../lib/data';
+import { Card, Stack, Heading, Button, Input, Badge, Grid } from './ui';
+import Icon from './ui/Icon';
 
 interface PresetItem {
-  key: string;
-  label: string;
-  description: string;
+  readonly key: string;
+  readonly label: string;
+  readonly description: string;
 }
 
 interface WizardStep {
   title: string;
   key: string;
-  data?: PresetItem[];
+  data?: readonly PresetItem[];
   multiSelect?: boolean;
   custom?: boolean;
 }
@@ -57,11 +53,11 @@ export default function Wizard({ onGenerate }: WizardProps) {
   const [error, setError] = useState<string | null>(null);
 
   const steps: WizardStep[] = [
-    { title: 'Project Type', key: 'type', data: projectTypes },
-    { title: 'Brand Vibe', key: 'vibe', data: brandVibes },
-    { title: 'Layout', key: 'layout', data: layouts },
-    { title: 'Modules', key: 'modules', data: modules, multiSelect: true },
-    { title: 'Theme', key: 'theme', data: themes },
+    { title: 'Project Type', key: 'type', data: quoteWizardConfig.projectTypes },
+    { title: 'Brand Vibe', key: 'vibe', data: quoteWizardConfig.brandVibes },
+    { title: 'Layout', key: 'layout', data: quoteWizardConfig.layouts },
+    { title: 'Modules', key: 'modules', data: quoteWizardConfig.modules, multiSelect: true },
+    { title: 'Theme', key: 'theme', data: quoteWizardConfig.themes },
     { title: 'CTA Text', key: 'cta', custom: true },
     { title: 'Assets', key: 'assets', custom: true }
   ];
@@ -128,126 +124,122 @@ export default function Wizard({ onGenerate }: WizardProps) {
     if (step.custom) {
       if (step.key === 'cta') {
         return (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Call-to-Action Text (max 20 characters)
-              </label>
-              <input
-                type="text"
-                maxLength={20}
-                value={state.cta}
-                onChange={(e) => updateState('cta', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Get Started"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                {state.cta.length}/20 characters
-              </p>
-            </div>
-          </div>
+          <Stack spacing="md">
+            <Input
+              label="Call-to-Action Text (max 20 characters)"
+              type="text"
+              maxLength={20}
+              value={state.cta}
+              onChange={(e) => updateState('cta', e.target.value)}
+              placeholder="Get Started"
+              helperText={`${state.cta.length}/20 characters`}
+            />
+          </Stack>
         );
       }
       
       if (step.key === 'assets') {
         return (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+          <Stack spacing="lg">
+            <Stack spacing="sm">
+              <Heading level={6} className="mb-0 text-white">
                 Logo Upload (optional)
-              </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file && file.size <= 250 * 1024) {
-                      updateState('logo', file);
-                    }
-                  }}
-                  className="hidden"
-                  id="logo-upload"
-                />
-                <label htmlFor="logo-upload" className="cursor-pointer">
-                  <span className="text-blue-600 hover:text-blue-500">Upload logo</span>
-                  <span className="text-gray-500"> or drag and drop</span>
-                </label>
-                <p className="text-xs text-gray-500 mt-1">Max 250KB, preview only</p>
-              </div>
-            </div>
+              </Heading>
+              <Card variant="outlined" className="text-center">
+                <Stack spacing="md" align="center">
+                  <Icon icon={Upload} size="2xl" className="text-gray-400" />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file && file.size <= 250 * 1024) {
+                        updateState('logo', file);
+                      }
+                    }}
+                    className="hidden"
+                    id="logo-upload"
+                  />
+                  <label htmlFor="logo-upload" className="cursor-pointer">
+                    <span className="text-accent-blue hover:text-blue-400">Upload logo</span>
+                    <span className="text-gray-400"> or drag and drop</span>
+                  </label>
+                  <p className="text-xs text-gray-500">Max 250KB, preview only</p>
+                </Stack>
+              </Card>
+            </Stack>
             
             {state.theme === 'custom' && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <Stack spacing="sm">
+                <Heading level={6} className="mb-0 text-white">
                   Brand Colors
-                </label>
-                <div className="flex gap-4">
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1">Primary</label>
+                </Heading>
+                <Stack direction="horizontal" spacing="lg">
+                  <Stack spacing="xs" align="center">
+                    <label className="block text-xs text-gray-400">Primary</label>
                     <input
                       type="color"
                       value={state.customColors[0]}
                       onChange={(e) => updateState('customColors', [e.target.value, state.customColors[1]])}
-                      className="w-12 h-12 border border-gray-300 rounded cursor-pointer"
+                      className="w-12 h-12 border border-gray-600 rounded cursor-pointer bg-gray-800"
                     />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-gray-500 mb-1">Secondary</label>
+                  </Stack>
+                  <Stack spacing="xs" align="center">
+                    <label className="block text-xs text-gray-400">Secondary</label>
                     <input
                       type="color"
                       value={state.customColors[1]}
                       onChange={(e) => updateState('customColors', [state.customColors[0], e.target.value])}
-                      className="w-12 h-12 border border-gray-300 rounded cursor-pointer"
+                      className="w-12 h-12 border border-gray-600 rounded cursor-pointer bg-gray-800"
                     />
-                  </div>
-                </div>
-              </div>
+                  </Stack>
+                </Stack>
+              </Stack>
             )}
-          </div>
+          </Stack>
         );
       }
     }
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {step.data?.map((item: PresetItem) => (
-          <button
-            key={item.key}
-            onClick={() => {
-              if (step.multiSelect) {
-                const current = state[step.key as keyof WizardState] as string[];
-                const newValue = current.includes(item.key)
-                  ? current.filter(k => k !== item.key)
-                  : [...current, item.key];
-                updateState(step.key, newValue);
-              } else {
-                updateState(step.key, item.key);
-              }
-            }}
-            className={`p-4 border-2 rounded-lg text-left transition-all ${
-              step.multiSelect
-                ? (state[step.key as keyof WizardState] as string[])?.includes(item.key)
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
-                : state[step.key as keyof WizardState] === item.key
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <h3 className="font-medium text-gray-900">{item.label}</h3>
-                <p className="text-sm text-gray-500 mt-1">{item.description}</p>
-              </div>
-              {step.multiSelect && (state[step.key as keyof WizardState] as string[])?.includes(item.key) && (
-                <Check className="w-5 h-5 text-blue-500" />
-              )}
-            </div>
-          </button>
-        ))}
-      </div>
+      <Grid cols={3} gap="md" responsive={true}>
+        {step.data?.map((item: PresetItem) => {
+          const isSelected = step.multiSelect
+            ? (state[step.key as keyof WizardState] as string[])?.includes(item.key)
+            : state[step.key as keyof WizardState] === item.key;
+
+          return (
+            <Card
+              key={item.key}
+              variant={isSelected ? "default" : "outlined"}
+              className={`cursor-pointer transition-all hover:scale-105 ${
+                isSelected ? 'border-accent-blue bg-gray-800' : 'hover:border-gray-500'
+              }`}
+              onClick={() => {
+                if (step.multiSelect) {
+                  const current = state[step.key as keyof WizardState] as string[];
+                  const newValue = current.includes(item.key)
+                    ? current.filter(k => k !== item.key)
+                    : [...current, item.key];
+                  updateState(step.key, newValue);
+                } else {
+                  updateState(step.key, item.key);
+                }
+              }}
+            >
+              <Stack direction="horizontal" justify="between" align="start">
+                <Stack spacing="xs" className="flex-1">
+                  <Heading level={6} className="mb-0 text-white">{item.label}</Heading>
+                  <p className="text-sm text-gray-400">{item.description}</p>
+                </Stack>
+                {step.multiSelect && isSelected && (
+                  <Icon icon={Check} className="text-accent-blue flex-shrink-0" />
+                )}
+              </Stack>
+            </Card>
+          );
+        })}
+      </Grid>
     );
   };
 
@@ -258,76 +250,80 @@ export default function Wizard({ onGenerate }: WizardProps) {
       state.theme === 'dark' ? ['#1f2937', '#f9fafb'] : ['#ffffff', '#1f2937'];
 
     return (
-      <div className="bg-white border border-gray-200 rounded-lg p-4 mt-6">
-        <h3 className="text-sm font-medium text-gray-700 mb-3">Live Preview</h3>
-        <div 
-          className="w-full h-32 rounded border-2 border-dashed border-gray-300 flex items-center justify-center"
-          style={{ backgroundColor: previewColors[0] }}
-        >
-          <div className="text-center">
-            <div 
-              className="text-lg font-medium mb-1"
-              style={{ color: previewColors[1] }}
-            >
-              {state.cta || 'Sample Text'}
-            </div>
-            <div className="text-xs text-gray-500">
-              {state.type} • {state.layout}
-            </div>
+      <Card variant="outlined" className="mt-6">
+        <Stack spacing="sm">
+          <Heading level={6} className="mb-0 text-white">Live Preview</Heading>
+          <div 
+            className="w-full h-32 rounded border-2 border-dashed border-gray-600 flex items-center justify-center"
+            style={{ backgroundColor: previewColors[0] }}
+          >
+            <Stack spacing="xs" align="center">
+              <div 
+                className="text-lg font-medium"
+                style={{ color: previewColors[1] }}
+              >
+                {state.cta || 'Sample Text'}
+              </div>
+              <div className="text-xs text-gray-500">
+                {state.type} • {state.layout}
+              </div>
+            </Stack>
           </div>
-        </div>
-      </div>
+        </Stack>
+      </Card>
     );
   };
 
   if (result) {
     return (
       <div className="max-w-4xl mx-auto p-6">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">{result.spec.title}</h2>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {result.spec.modules.map(module => (
-                <span key={module} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-                  {module}
-                </span>
-              ))}
+        <Card variant="dark" className="overflow-hidden">
+          <Stack spacing="lg">
+            <Stack spacing="md">
+              <Heading level={3} className="mb-0">{result.spec.title}</Heading>
+              <Stack direction="horizontal" spacing="sm" wrap>
+                {result.spec.modules.map(module => (
+                  <Badge key={module} variant="primary">
+                    {module}
+                  </Badge>
+                ))}
+              </Stack>
+              <Stack direction="horizontal" spacing="md" wrap>
+                <Button
+                  icon={Download}
+                  onClick={handleDownload}
+                  variant="primary"
+                >
+                  Download PNG
+                </Button>
+                <Button
+                  icon={Share2}
+                  onClick={handleShare}
+                  variant="secondary"
+                >
+                  Share Result
+                </Button>
+                <Button
+                  onClick={() => {
+                    setResult(null);
+                    setCurrentStep(0);
+                  }}
+                  variant="ghost"
+                >
+                  Start Over
+                </Button>
+              </Stack>
+            </Stack>
+            <div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src={result.imageUrl} 
+                alt="Generated UI Mock" 
+                className="w-full rounded-lg shadow-md"
+              />
             </div>
-            <div className="flex gap-4">
-              <button
-                onClick={handleDownload}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                <Download className="w-4 h-4" />
-                Download PNG
-              </button>
-              <button
-                onClick={handleShare}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
-              >
-                <Share2 className="w-4 h-4" />
-                Share Result
-              </button>
-              <button
-                onClick={() => {
-                  setResult(null);
-                  setCurrentStep(0);
-                }}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800"
-              >
-                Start Over
-              </button>
-            </div>
-          </div>
-          <div className="p-6">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img 
-              src={result.imageUrl} 
-              alt="Generated UI Mock" 
-              className="w-full rounded-lg shadow-md"
-            />
-          </div>
-        </div>
+          </Stack>
+        </Card>
       </div>
     );
   }
@@ -336,81 +332,84 @@ export default function Wizard({ onGenerate }: WizardProps) {
     <div className="max-w-4xl mx-auto p-6">
       <CostNotice />
       
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        {/* Progress */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-2">
-            {steps.map((step, index) => (
-              <div key={step.key} className="flex items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  index < currentStep
-                    ? 'bg-green-500 text-white'
-                    : index === currentStep
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 text-gray-600'
-                }`}>
-                  {index < currentStep ? <Check className="w-4 h-4" /> : index + 1}
-                </div>
-                {index < steps.length - 1 && (
-                  <div className={`w-12 h-0.5 mx-2 ${
-                    index < currentStep ? 'bg-green-500' : 'bg-gray-200'
-                  }`} />
-                )}
-              </div>
-            ))}
-          </div>
-          <span className="text-sm text-gray-500">
-            Step {currentStep + 1} of {steps.length}
-          </span>
-        </div>
+      <Card variant="dark">
+        <Stack spacing="lg">
+          {/* Progress */}
+          <Stack direction="horizontal" justify="between" align="center">
+            <Stack direction="horizontal" spacing="sm" align="center">
+              {steps.map((step, index) => (
+                <Stack key={step.key} direction="horizontal" align="center" spacing="sm">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    index < currentStep
+                      ? 'bg-green-500 text-white'
+                      : index === currentStep
+                      ? 'bg-accent-blue text-white'
+                      : 'bg-gray-700 text-gray-400'
+                  }`}>
+                    {index < currentStep ? <Icon icon={Check} size="sm" /> : index + 1}
+                  </div>
+                  {index < steps.length - 1 && (
+                    <div className={`w-12 h-0.5 ${
+                      index < currentStep ? 'bg-green-500' : 'bg-gray-700'
+                    }`} />
+                  )}
+                </Stack>
+              ))}
+            </Stack>
+            <span className="text-sm text-gray-400">
+              Step {currentStep + 1} of {steps.length}
+            </span>
+          </Stack>
 
-        {/* Step Content */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            {steps[currentStep].title}
-          </h2>
-          {renderStepContent()}
-          {renderPreview()}
-        </div>
+          {/* Step Content */}
+          <Stack spacing="lg">
+            <Heading level={4} className="mb-0">
+              {steps[currentStep].title}
+            </Heading>
+            {renderStepContent()}
+            {renderPreview()}
+          </Stack>
 
-        {/* Error */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <p className="text-red-700">{error}</p>
-          </div>
-        )}
-
-        {/* Navigation */}
-        <div className="flex justify-between">
-          <button
-            onClick={handleBack}
-            disabled={currentStep === 0}
-            className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Back
-          </button>
-          
-          {currentStep < steps.length - 1 ? (
-            <button
-              onClick={handleNext}
-              disabled={!state[steps[currentStep].key as keyof WizardState]}
-              className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Next
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          ) : (
-            <button
-              onClick={handleGenerate}
-              disabled={isGenerating || !state.cta}
-              className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isGenerating ? 'Generating...' : 'Generate Mock'}
-            </button>
+          {/* Error */}
+          {error && (
+            <Card variant="outlined" className="border-red-500 bg-red-900/20">
+              <p className="text-red-400">{error}</p>
+            </Card>
           )}
-        </div>
-      </div>
+
+          {/* Navigation */}
+          <Stack direction="horizontal" justify="between">
+            <Button
+              icon={ChevronLeft}
+              onClick={handleBack}
+              disabled={currentStep === 0}
+              variant="ghost"
+            >
+              Back
+            </Button>
+            
+            {currentStep < steps.length - 1 ? (
+              <Button
+                icon={ChevronRight}
+                iconPosition="right"
+                onClick={handleNext}
+                disabled={!state[steps[currentStep].key as keyof WizardState]}
+                variant="primary"
+              >
+                Next
+              </Button>
+            ) : (
+              <Button
+                onClick={handleGenerate}
+                disabled={isGenerating || !state.cta}
+                variant="primary"
+              >
+                {isGenerating ? 'Generating...' : 'Generate Mock'}
+              </Button>
+            )}
+          </Stack>
+        </Stack>
+      </Card>
     </div>
   );
 }

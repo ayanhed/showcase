@@ -310,3 +310,147 @@ export const stories = [
   //   cta: { label: "Projects", href: "/projects" },
   // },
 ] as const;
+
+// Quote Wizard Configuration
+export const quoteWizardConfig = {
+  projectTypes: [
+    {
+      key: "website",
+      label: "Website",
+      description: "Simple informational site"
+    },
+    {
+      key: "webapp",
+      label: "Web App", 
+      description: "Interactive application"
+    },
+    {
+      key: "mobile",
+      label: "Mobile App",
+      description: "Native mobile interface"
+    },
+    {
+      key: "dashboard",
+      label: "Dashboard",
+      description: "Data visualization hub"
+    },
+    {
+      key: "ecommerce",
+      label: "E-commerce",
+      description: "Online store platform"
+    }
+  ],
+  brandVibes: [
+    {
+      key: "minimal",
+      label: "Minimal",
+      description: "Clean and simple"
+    },
+    {
+      key: "corporate", 
+      label: "Corporate",
+      description: "Professional and trusted"
+    },
+    {
+      key: "playful",
+      label: "Playful",
+      description: "Fun and energetic"
+    },
+    {
+      key: "bold",
+      label: "Bold",
+      description: "Strong and confident"
+    },
+    {
+      key: "luxury",
+      label: "Luxury",
+      description: "Premium and elegant"
+    }
+  ],
+  layouts: [
+    {
+      key: "hero_features_cta",
+      label: "Hero + Features + CTA",
+      description: "Landing page with hero section"
+    },
+    {
+      key: "sidebar_app",
+      label: "Sidebar App",
+      description: "Navigation sidebar layout"
+    },
+    {
+      key: "auth_dashboard",
+      label: "Auth + Dashboard", 
+      description: "Login with dashboard view"
+    },
+    {
+      key: "storefront_grid",
+      label: "Storefront Grid",
+      description: "Product grid layout"
+    },
+    {
+      key: "marketing_landing",
+      label: "Marketing Landing",
+      description: "Conversion-focused landing"
+    }
+  ],
+  modules: [
+    {
+      key: "auth",
+      label: "Authentication",
+      description: "Login/signup system"
+    },
+    {
+      key: "pricing",
+      label: "Pricing",
+      description: "Pricing tables/plans"
+    },
+    {
+      key: "testimonials",
+      label: "Testimonials", 
+      description: "Customer reviews"
+    },
+    {
+      key: "contact",
+      label: "Contact",
+      description: "Contact forms"
+    },
+    {
+      key: "blog",
+      label: "Blog",
+      description: "Content management"
+    },
+    {
+      key: "analytics",
+      label: "Analytics",
+      description: "Data tracking"
+    },
+    {
+      key: "cart_checkout",
+      label: "Cart/Checkout",
+      description: "Shopping cart system"
+    }
+  ],
+  themes: [
+    {
+      key: "light",
+      label: "Light",
+      description: "Clean light theme"
+    },
+    {
+      key: "dark",
+      label: "Dark", 
+      description: "Modern dark theme"
+    },
+    {
+      key: "auto",
+      label: "Auto",
+      description: "System preference"
+    },
+    {
+      key: "custom",
+      label: "Custom Colors",
+      description: "Pick your own colors"
+    }
+  ]
+} as const;
