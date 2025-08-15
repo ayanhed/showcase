@@ -1,0 +1,27 @@
+[
+  {
+    "key": "minimal",
+    "label": "Minimal",
+    "description": "Clean and simple"
+  },
+  {
+    "key": "corporate",
+    "label": "Corporate",
+    "description": "Professional and trusted"
+  },
+  {
+    "key": "playful",
+    "label": "Playful",
+    "description": "Fun and energetic"
+  },
+  {
+    "key": "bold",
+    "label": "Bold",
+    "description": "Strong and confident"
+  },
+  {
+    "key": "luxury",
+    "label": "Luxury",
+    "description": "Premium and elegant"
+  }
+]

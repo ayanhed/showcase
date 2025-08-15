@@ -1,0 +1,27 @@
+[
+  {
+    "key": "website",
+    "label": "Website",
+    "description": "Simple informational site"
+  },
+  {
+    "key": "webapp",
+    "label": "Web App",
+    "description": "Interactive application"
+  },
+  {
+    "key": "mobile",
+    "label": "Mobile App",
+    "description": "Native mobile interface"
+  },
+  {
+    "key": "dashboard",
+    "label": "Dashboard",
+    "description": "Data visualization hub"
+  },
+  {
+    "key": "ecommerce",
+    "label": "E-commerce",
+    "description": "Online store platform"
+  }
+]
