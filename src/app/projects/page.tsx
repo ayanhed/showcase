@@ -8,6 +8,7 @@ import {
   CallToAction,
   Animate,
   Stack,
+  Text,
 } from "@/components/ui";
 import ProjectCard from "@/components/ProjectCard";
 import JsonLd from "@/components/JsonLd";
@@ -24,6 +25,13 @@ export default function Projects() {
         title="My Projects"
         subtitle="A collection of projects showcasing my skills in full-stack development, from small applications to enterprise-level solutions."
       />
+
+      {/* Note about upcoming content */}
+      <Section>
+        <Container>
+          <Text variant="muted">I’m refreshing this section — new projects will be added soon.</Text>
+        </Container>
+      </Section>
 
       {/* Projects Grid */}
       <Section>
