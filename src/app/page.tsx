@@ -28,7 +28,7 @@ export default function Home() {
     <div id="home">
       {/* JSON-LD Structured Data */}
       <JsonLd data={getHomePageSchemas()} />
-      
+
       {/* Hero Section - Now using our component */}
       <Hero personalInfo={personalInfo} />
       {/* About Me Section - Refactored with components */}

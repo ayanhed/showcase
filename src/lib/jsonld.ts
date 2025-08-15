@@ -1,13 +1,19 @@
-import { personalInfo, contactInfo, projects, Project, experience } from './data';
+import {
+  personalInfo,
+  contactInfo,
+  projects,
+  Project,
+  experience,
+} from "./data";
 
 // Base schema types
 export interface BaseSchema {
-  '@context': string;
-  '@type': string;
+  "@context": string;
+  "@type": string;
 }
 
 export interface Person extends BaseSchema {
-  '@type': 'Person';
+  "@type": "Person";
   name: string;
   jobTitle?: string;
   description?: string;
@@ -23,7 +29,7 @@ export interface Person extends BaseSchema {
 }
 
 export interface Organization extends BaseSchema {
-  '@type': 'Organization';
+  "@type": "Organization";
   name: string;
   url?: string;
   logo?: ImageObject;
@@ -34,7 +40,7 @@ export interface Organization extends BaseSchema {
 }
 
 export interface Website extends BaseSchema {
-  '@type': 'Website';
+  "@type": "Website";
   name: string;
   url: string;
   description?: string;
@@ -44,7 +50,7 @@ export interface Website extends BaseSchema {
 }
 
 export interface WebPage extends BaseSchema {
-  '@type': 'WebPage';
+  "@type": "WebPage";
   name: string;
   url: string;
   description?: string;
@@ -57,7 +63,7 @@ export interface WebPage extends BaseSchema {
 }
 
 export interface ProfilePage extends BaseSchema {
-  '@type': 'ProfilePage';
+  "@type": "ProfilePage";
   name: string;
   url: string;
   description?: string;
@@ -70,7 +76,7 @@ export interface ProfilePage extends BaseSchema {
 }
 
 export interface BlogPosting extends BaseSchema {
-  '@type': 'BlogPosting';
+  "@type": "BlogPosting";
   headline: string;
   description?: string;
   url: string;
@@ -85,7 +91,7 @@ export interface BlogPosting extends BaseSchema {
 }
 
 export interface CreativeWork extends BaseSchema {
-  '@type': 'CreativeWork';
+  "@type": "CreativeWork";
   name: string;
   description?: string;
   url?: string;
@@ -97,7 +103,7 @@ export interface CreativeWork extends BaseSchema {
 }
 
 export interface SoftwareApplication extends BaseSchema {
-  '@type': 'SoftwareApplication';
+  "@type": "SoftwareApplication";
   name: string;
   description?: string;
   url?: string;
@@ -110,19 +116,19 @@ export interface SoftwareApplication extends BaseSchema {
 }
 
 export interface BreadcrumbList extends BaseSchema {
-  '@type': 'BreadcrumbList';
+  "@type": "BreadcrumbList";
   itemListElement: ListItem[];
 }
 
 export interface ListItem extends BaseSchema {
-  '@type': 'ListItem';
+  "@type": "ListItem";
   position: number;
   name: string;
   item?: string;
 }
 
 export interface ImageObject extends BaseSchema {
-  '@type': 'ImageObject';
+  "@type": "ImageObject";
   url: string;
   width?: number;
   height?: number;
@@ -130,26 +136,26 @@ export interface ImageObject extends BaseSchema {
 }
 
 export interface PostalAddress extends BaseSchema {
-  '@type': 'PostalAddress';
+  "@type": "PostalAddress";
   addressLocality?: string;
   addressCountry?: string;
   addressRegion?: string;
 }
 
 export interface ContactPoint extends BaseSchema {
-  '@type': 'ContactPoint';
+  "@type": "ContactPoint";
   telephone?: string;
   email?: string;
   contactType?: string;
 }
 
 export interface EducationalOrganization extends BaseSchema {
-  '@type': 'EducationalOrganization';
+  "@type": "EducationalOrganization";
   name: string;
 }
 
 export interface Offer extends BaseSchema {
-  '@type': 'Offer';
+  "@type": "Offer";
   price?: string;
   priceCurrency?: string;
   availability?: string;
@@ -157,52 +163,47 @@ export interface Offer extends BaseSchema {
 
 // Utility functions
 export const createBaseUrl = (): string => {
-  return 'https://ayanhedayati.com';
+  return "https://ayanhedayati.com";
 };
 
 export const createPerson = (): Person => {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'Person',
+    "@context": "https://schema.org",
+    "@type": "Person",
     name: personalInfo.name,
     jobTitle: personalInfo.title,
     description: personalInfo.about,
     image: `${createBaseUrl()}${personalInfo.profileImage}`,
     url: createBaseUrl(),
     email: personalInfo.email,
-    telephone: personalInfo.phone,
     address: {
-      '@context': 'https://schema.org',
-      '@type': 'PostalAddress',
-      addressLocality: 'Birmingham',
-      addressCountry: 'UK',
+      "@context": "https://schema.org",
+      "@type": "PostalAddress",
+      addressLocality: "Birmingham",
+      addressCountry: "UK",
     },
     alumniOf: {
-      '@context': 'https://schema.org',
-      '@type': 'EducationalOrganization',
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
       name: personalInfo.education.university,
     },
-    knowsLanguage: personalInfo.languages.map(lang => lang.name),
-    sameAs: [
-      contactInfo.github,
-      contactInfo.linkedin,
-      contactInfo.instagram,
-    ],
+    knowsLanguage: personalInfo.languages.map((lang) => lang.name),
+    sameAs: [contactInfo.github, contactInfo.linkedin, contactInfo.instagram],
   };
 };
 
 export const createWebsite = (): Website => {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'Website',
+    "@context": "https://schema.org",
+    "@type": "Website",
     name: `${personalInfo.name} - ${personalInfo.title}`,
     url: createBaseUrl(),
     description: personalInfo.about,
-    inLanguage: 'en-US',
+    inLanguage: "en-US",
     author: createPerson(),
     publisher: {
-      '@context': 'https://schema.org',
-      '@type': 'Organization',
+      "@context": "https://schema.org",
+      "@type": "Organization",
       name: personalInfo.name,
       url: createBaseUrl(),
       founder: createPerson(),
@@ -218,12 +219,12 @@ export const createWebPage = (
   dateModified?: string
 ): WebPage => {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
+    "@context": "https://schema.org",
+    "@type": "WebPage",
     name,
     url: `${createBaseUrl()}${path}`,
     description: description || personalInfo.about,
-    inLanguage: 'en-US',
+    inLanguage: "en-US",
     isPartOf: createWebsite(),
     author: createPerson(),
     datePublished,
@@ -237,12 +238,12 @@ export const createProfilePage = (
   description?: string
 ): ProfilePage => {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'ProfilePage',
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
     name,
     url: `${createBaseUrl()}${path}`,
     description: description || personalInfo.about,
-    inLanguage: 'en-US',
+    inLanguage: "en-US",
     isPartOf: createWebsite(),
     about: createPerson(),
     datePublished: new Date().toISOString(),
@@ -260,8 +261,8 @@ export const createBlogPosting = (
   wordCount?: number
 ): BlogPosting => {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
     headline: title,
     description,
     url: `${createBaseUrl()}/blog/${slug}`,
@@ -269,80 +270,90 @@ export const createBlogPosting = (
     dateModified: dateModified || datePublished,
     author: createPerson(),
     publisher: {
-      '@context': 'https://schema.org',
-      '@type': 'Organization',
+      "@context": "https://schema.org",
+      "@type": "Organization",
       name: personalInfo.name,
       url: createBaseUrl(),
     },
     mainEntityOfPage: {
-      '@context': 'https://schema.org',
-      '@type': 'WebPage',
+      "@context": "https://schema.org",
+      "@type": "WebPage",
       name: title,
       url: `${createBaseUrl()}/blog/${slug}`,
       description,
-      inLanguage: 'en-US',
+      inLanguage: "en-US",
     },
     wordCount,
-    articleSection: 'Technology',
+    articleSection: "Technology",
   };
 };
 
-export const createSoftwareApplication = (project: Project): SoftwareApplication => {
+export const createSoftwareApplication = (
+  project: Project
+): SoftwareApplication => {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
     name: project.title,
     description: project.description,
     url: project.link,
     dateCreated: project.date,
     creator: createPerson(),
-    applicationCategory: 'WebApplication',
-    operatingSystem: 'Web Browser',
-    screenshot: project.projectImage ? {
-      '@context': 'https://schema.org',
-      '@type': 'ImageObject',
-      url: `${createBaseUrl()}${project.projectImage}`,
-    } : undefined,
-    offers: project.link ? {
-      '@context': 'https://schema.org',
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD',
-      availability: 'https://schema.org/InStock',
-    } : undefined,
+    applicationCategory: "WebApplication",
+    operatingSystem: "Web Browser",
+    screenshot: project.projectImage
+      ? {
+          "@context": "https://schema.org",
+          "@type": "ImageObject",
+          url: `${createBaseUrl()}${project.projectImage}`,
+        }
+      : undefined,
+    offers: project.link
+      ? {
+          "@context": "https://schema.org",
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "USD",
+          availability: "https://schema.org/InStock",
+        }
+      : undefined,
   };
 };
 
 export const createCreativeWork = (project: Project): CreativeWork => {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'CreativeWork',
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
     name: project.title,
     description: project.description,
     url: project.link,
     dateCreated: project.date,
     creator: createPerson(),
-    about: 'Software Development',
+    about: "Software Development",
     keywords: [
       ...(project.techDetails.frontend || []),
       ...(project.techDetails.backend || []),
       ...(project.techDetails.libraries || []),
     ],
-    image: project.projectImage ? {
-      '@context': 'https://schema.org',
-      '@type': 'ImageObject',
-      url: `${createBaseUrl()}${project.projectImage}`,
-    } : undefined,
+    image: project.projectImage
+      ? {
+          "@context": "https://schema.org",
+          "@type": "ImageObject",
+          url: `${createBaseUrl()}${project.projectImage}`,
+        }
+      : undefined,
   };
 };
 
-export const createBreadcrumbList = (items: { name: string; url?: string }[]): BreadcrumbList => {
+export const createBreadcrumbList = (
+  items: { name: string; url?: string }[]
+): BreadcrumbList => {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
     itemListElement: items.map((item, index) => ({
-      '@context': 'https://schema.org',
-      '@type': 'ListItem',
+      "@context": "https://schema.org",
+      "@type": "ListItem",
       position: index + 1,
       name: item.name,
       item: item.url ? `${createBaseUrl()}${item.url}` : undefined,
@@ -356,7 +367,7 @@ export const getHomePageSchemas = () => {
     createWebsite(),
     createProfilePage(
       `${personalInfo.name} - ${personalInfo.title}`,
-      '/',
+      "/",
       personalInfo.about
     ),
     createPerson(),
@@ -367,57 +378,45 @@ export const getAboutPageSchemas = () => {
   return [
     createProfilePage(
       `About ${personalInfo.name}`,
-      '/about',
+      "/about",
       `Learn more about ${personalInfo.name}, ${personalInfo.title} based in ${personalInfo.location}`
     ),
     createPerson(),
-    createBreadcrumbList([
-      { name: 'Home', url: '/' },
-      { name: 'About' },
-    ]),
+    createBreadcrumbList([{ name: "Home", url: "/" }, { name: "About" }]),
   ];
 };
 
 export const getBlogPageSchemas = () => {
   return [
     createWebPage(
-      'Tech Blog',
-      '/blog',
-      'A blog about technology, programming, and various intriguing topics'
+      "Tech Blog",
+      "/blog",
+      "A blog about technology, programming, and various intriguing topics"
     ),
-    createBreadcrumbList([
-      { name: 'Home', url: '/' },
-      { name: 'Blog' },
-    ]),
+    createBreadcrumbList([{ name: "Home", url: "/" }, { name: "Blog" }]),
   ];
 };
 
 export const getProjectsPageSchemas = () => {
   return [
     createWebPage(
-      'Projects',
-      '/projects',
-      'Explore my latest projects and software development work'
+      "Projects",
+      "/projects",
+      "Explore my latest projects and software development work"
     ),
-    createBreadcrumbList([
-      { name: 'Home', url: '/' },
-      { name: 'Projects' },
-    ]),
-    ...projects.map(project => createSoftwareApplication(project)),
+    createBreadcrumbList([{ name: "Home", url: "/" }, { name: "Projects" }]),
+    ...projects.map((project) => createSoftwareApplication(project)),
   ];
 };
 
 export const getContactPageSchemas = () => {
   return [
     createWebPage(
-      'Contact',
-      '/contact',
+      "Contact",
+      "/contact",
       `Get in touch with ${personalInfo.name} for collaboration opportunities`
     ),
-    createBreadcrumbList([
-      { name: 'Home', url: '/' },
-      { name: 'Contact' },
-    ]),
+    createBreadcrumbList([{ name: "Home", url: "/" }, { name: "Contact" }]),
   ];
 };
 
@@ -431,12 +430,19 @@ export const getBlogPostSchemas = (
   content?: string
 ) => {
   const wordCount = content ? content.split(/\s+/).length : undefined;
-  
+
   return [
-    createBlogPosting(title, slug, excerpt, publishedDate, modifiedDate, wordCount),
+    createBlogPosting(
+      title,
+      slug,
+      excerpt,
+      publishedDate,
+      modifiedDate,
+      wordCount
+    ),
     createBreadcrumbList([
-      { name: 'Home', url: '/' },
-      { name: 'Blog', url: '/blog' },
+      { name: "Home", url: "/" },
+      { name: "Blog", url: "/blog" },
       { name: title },
     ]),
   ];
@@ -453,8 +459,8 @@ export const getProjectPageSchemas = (project: Project) => {
     createSoftwareApplication(project),
     createCreativeWork(project),
     createBreadcrumbList([
-      { name: 'Home', url: '/' },
-      { name: 'Projects', url: '/projects' },
+      { name: "Home", url: "/" },
+      { name: "Projects", url: "/projects" },
       { name: project.title },
     ]),
   ];
@@ -463,13 +469,13 @@ export const getProjectPageSchemas = (project: Project) => {
 // FAQ Page schema (if you add FAQ in the future)
 export const createFAQPage = (faqs: { question: string; answer: string }[]) => {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqs.map(faq => ({
-      '@type': 'Question',
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
       name: faq.question,
       acceptedAnswer: {
-        '@type': 'Answer',
+        "@type": "Answer",
         text: faq.answer,
       },
     })),
@@ -479,31 +485,32 @@ export const createFAQPage = (faqs: { question: string; answer: string }[]) => {
 // Service schema for freelance work
 export const createServiceSchema = () => {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'Service',
-    name: 'Full Stack Development Services',
-    description: 'Professional web development, React applications, and cloud solutions',
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Full Stack Development Services",
+    description:
+      "Professional web development, React applications, and cloud solutions",
     provider: createPerson(),
-    areaServed: ['United Kingdom', 'Europe', 'Remote'],
-    serviceType: 'Software Development',
+    areaServed: ["United Kingdom", "Europe", "Remote"],
+    serviceType: "Software Development",
     offers: [
       {
-        '@type': 'Offer',
-        name: 'Frontend Development',
-        description: 'React, TypeScript, and modern web applications',
-        category: 'Web Development',
+        "@type": "Offer",
+        name: "Frontend Development",
+        description: "React, TypeScript, and modern web applications",
+        category: "Web Development",
       },
       {
-        '@type': 'Offer',
-        name: 'Backend Development', 
-        description: 'Node.js, APIs, and cloud infrastructure',
-        category: 'Backend Development',
+        "@type": "Offer",
+        name: "Backend Development",
+        description: "Node.js, APIs, and cloud infrastructure",
+        category: "Backend Development",
       },
       {
-        '@type': 'Offer',
-        name: 'Full Stack Solutions',
-        description: 'End-to-end web application development',
-        category: 'Full Stack Development',
+        "@type": "Offer",
+        name: "Full Stack Solutions",
+        description: "End-to-end web application development",
+        category: "Full Stack Development",
       },
     ],
   };
@@ -513,28 +520,30 @@ export const createServiceSchema = () => {
 export const createProfessionalProfile = () => {
   const person = createPerson();
   return {
-    '@context': 'https://schema.org',
-    '@type': 'ProfilePage',
-    dateCreated: '2024-01-01',
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    dateCreated: "2024-01-01",
     dateModified: new Date().toISOString(),
     mainEntity: {
       ...person,
       hasOccupation: {
-        '@type': 'Occupation',
+        "@type": "Occupation",
         name: personalInfo.title,
-        occupationalCategory: 'Software Developer',
+        occupationalCategory: "Software Developer",
         responsibilities: [
-          'Full-stack web development',
-          'React and TypeScript applications',
-          'Cloud infrastructure and DevOps',
-          'Technical leadership and mentoring',
+          "Full-stack web development",
+          "React and TypeScript applications",
+          "Cloud infrastructure and DevOps",
+          "Technical leadership and mentoring",
         ],
       },
-      worksFor: experience.map(exp => ({
-        '@type': 'Organization',
+      worksFor: experience.map((exp) => ({
+        "@type": "Organization",
         name: exp.company,
-        startDate: exp.period.split(' - ')[0],
-        endDate: exp.period.includes('Present') ? undefined : exp.period.split(' - ')[1],
+        startDate: exp.period.split(" - ")[0],
+        endDate: exp.period.includes("Present")
+          ? undefined
+          : exp.period.split(" - ")[1],
       })),
     },
   };
