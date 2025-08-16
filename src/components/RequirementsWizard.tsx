@@ -11,7 +11,6 @@ import {
   Input,
   Text,
 } from "@/components/ui";
-import CostNotice from "@/components/CostNotice";
 
 type ProjectType =
   | "Website"
@@ -264,7 +263,7 @@ export default function RequirementsWizard() {
 
       // Animate suggestions in
       setTimeout(() => setSuggestionsVisible(true), 100);
-    } catch (e) {
+    } catch (_) {
       // ignore; continue with predefined options
     } finally {
       setLoadingAssist(false);
@@ -279,7 +278,7 @@ export default function RequirementsWizard() {
       const selections = brief[currentKey as keyof Brief] as string[];
       getAssist(stepKey, selections);
     }
-  }, [stepIndex, brief.idea, brief.projectType]);
+  }, [stepIndex, brief.idea, brief.projectType, steps, canUseAI, getAssist, brief]);
 
   /**
    * Toggles a selection in a multi-select list.
@@ -399,7 +398,7 @@ export default function RequirementsWizard() {
                       variant="muted" 
                       className="text-lg sm:text-xl text-gray-300 leading-relaxed"
                     >
-                      Describe your project vision in your own words. Whether it's a simple website, 
+                      Describe your project vision in your own words. Whether it&apos;s a simple website, 
                       a complex app, or something in between—just share what you have in mind.
                     </Text>
                   </Stack>
@@ -447,7 +446,7 @@ export default function RequirementsWizard() {
                         <Stack direction="horizontal" spacing="sm" align="center">
                           <div className="text-blue-400 text-lg">💡</div>
                           <Text size="sm" className="text-blue-100">
-                            Great! We'll help you choose the best project type in the next step.
+                            Great! We&apos;ll help you choose the best project type in the next step.
                           </Text>
                         </Stack>
                       </Card>
