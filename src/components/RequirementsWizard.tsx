@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import {
   Card,
   Stack,
@@ -222,8 +222,8 @@ export default function RequirementsWizard() {
    * @param key - The current step key
    * @returns True if AI can be used for this step
    */
-  const canUseAI = (key: string) =>
-    ["goals", "features", "audience", "priorities"].includes(key);
+  const canUseAI = useCallback((key: string) =>
+    ["goals", "features", "audience", "priorities"].includes(key), []);
 
   /**
    * Fetches AI assistant suggestions for the current step.
@@ -234,11 +234,17 @@ export default function RequirementsWizard() {
    * @param stepKey - The current step (goals, features, audience, priorities)
    * @param selections - Current user selections for the step
    */
-  async function getAssist(
+  const getAssist = useCallback(async (
     stepKey: AssistantNote["step"],
     selections: string[]
-  ) {
-    if (!canUseAI(stepKey) || loadingAssist) return;
+  ) => {
+    console.log("getAssist called:", { stepKey, selections, canUseAI: canUseAI(stepKey), loadingAssist });
+    
+    if (!canUseAI(stepKey) || loadingAssist) {
+      console.log("getAssist early return:", { canUseAI: canUseAI(stepKey), loadingAssist });
+      return;
+    }
+    
     setLoadingAssist(true);
     setError(null);
     setSuggestionsVisible(false);
@@ -249,23 +255,33 @@ export default function RequirementsWizard() {
       console.warn("AI assistance timed out");
     }, 10000); // 10 second timeout
 
+    const requestBody = {
+      step: stepKey,
+      projectType: brief.projectType || "Website",
+      description: brief.idea,
+      selections,
+    };
+    
+    console.log("Making AI assist request:", requestBody);
+
     try {
       const res = await fetch("/api/assist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          step: stepKey,
-          projectType: brief.projectType || "Website",
-          description: brief.idea,
-          selections,
-        }),
+        body: JSON.stringify(requestBody),
       });
       
+      console.log("AI assist response status:", res.status, res.statusText);
+      
       if (!res.ok) {
+        const errorText = await res.text();
+        console.error("AI assist error response:", errorText);
         throw new Error(`HTTP ${res.status}: ${res.statusText}`);
       }
       
       const data = await res.json();
+      console.log("AI assist response data:", data);
+      
       const note: AssistantNote = { step: stepKey, ...data };
       setAssistant(note);
       setBrief((b) => ({
@@ -277,25 +293,51 @@ export default function RequirementsWizard() {
       // Animate suggestions in
       setTimeout(() => setSuggestionsVisible(true), 100);
     } catch (error) {
-      console.warn("AI assistance failed:", error);
-      // Clear any existing assistant state for this step
-      setAssistant(null);
-      // Still show existing predefined options
+      console.error("AI assistance failed:", error);
+      
+      // Provide fallback suggestions for testing
+      const fallbackSuggestions: Record<string, string[]> = {
+        goals: ["Showcase my work", "Connect with customers", "Build my brand"],
+        features: ["Contact form", "Gallery", "About section"],
+        audience: ["Potential clients", "Industry peers", "General visitors"],
+        priorities: []
+      };
+      
+      if (fallbackSuggestions[stepKey] && fallbackSuggestions[stepKey].length > 0) {
+        const fallbackNote: AssistantNote = { 
+          step: stepKey, 
+          suggestions: fallbackSuggestions[stepKey],
+          question: "This is a fallback response - please check your API configuration."
+        };
+        setAssistant(fallbackNote);
+        setTimeout(() => setSuggestionsVisible(true), 100);
+      } else {
+        setAssistant(null);
+      }
     } finally {
       clearTimeout(timeoutId);
       setLoadingAssist(false);
     }
-  }
+  }, [brief.projectType, brief.idea, loadingAssist, canUseAI]);
 
   // Auto-fetch AI suggestions when entering AI-enabled steps
   useEffect(() => {
     const currentKey = steps[stepIndex].key;
+    console.log("useEffect triggered:", { 
+      currentKey, 
+      stepIndex, 
+      canUseAI: canUseAI(currentKey), 
+      hasIdea: !!brief.idea.trim(),
+      ideaLength: brief.idea.length 
+    });
+    
     if (canUseAI(currentKey) && brief.idea.trim()) {
       const stepKey = currentKey as AssistantNote["step"];
       const selections = brief[currentKey as keyof Brief] as string[];
+      console.log("useEffect calling getAssist:", { stepKey, selections });
       getAssist(stepKey, selections);
     }
-  }, [stepIndex, brief.idea, brief.projectType, steps, canUseAI, getAssist, brief]);
+  }, [stepIndex, brief.idea, brief.projectType, getAssist, canUseAI]);
 
   /**
    * Toggles a selection in a multi-select list.
