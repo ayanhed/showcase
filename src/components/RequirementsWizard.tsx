@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import {
   Card,
   Stack,
@@ -181,6 +181,8 @@ export default function RequirementsWizard() {
   const [loadingAssist, setLoadingAssist] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [suggestionsVisible, setSuggestionsVisible] = useState(false);
+  const loadingRef = useRef(false);
+  const lastRequestRef = useRef<string | null>(null);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -238,19 +240,27 @@ export default function RequirementsWizard() {
     stepKey: AssistantNote["step"],
     selections: string[]
   ) => {
-    console.log("getAssist called:", { stepKey, selections, canUseAI: canUseAI(stepKey), loadingAssist });
+    const requestKey = `${stepKey}-${brief.idea}-${brief.projectType}`;
+    console.log("getAssist called:", { stepKey, selections, canUseAI: canUseAI(stepKey), loading: loadingRef.current, requestKey });
     
-    if (!canUseAI(stepKey) || loadingAssist) {
-      console.log("getAssist early return:", { canUseAI: canUseAI(stepKey), loadingAssist });
+    if (!canUseAI(stepKey) || loadingRef.current || lastRequestRef.current === requestKey) {
+      console.log("getAssist early return:", { 
+        canUseAI: canUseAI(stepKey), 
+        loading: loadingRef.current,
+        sameRequest: lastRequestRef.current === requestKey
+      });
       return;
     }
     
+    loadingRef.current = true;
+    lastRequestRef.current = requestKey;
     setLoadingAssist(true);
     setError(null);
     setSuggestionsVisible(false);
 
     // Set a timeout to prevent indefinite loading
     const timeoutId = setTimeout(() => {
+      loadingRef.current = false;
       setLoadingAssist(false);
       console.warn("AI assistance timed out");
     }, 10000); // 10 second timeout
@@ -316,9 +326,10 @@ export default function RequirementsWizard() {
       }
     } finally {
       clearTimeout(timeoutId);
+      loadingRef.current = false;
       setLoadingAssist(false);
     }
-  }, [brief.projectType, brief.idea, loadingAssist, canUseAI]);
+  }, [brief.projectType, brief.idea, canUseAI]);
 
   // Auto-fetch AI suggestions when entering AI-enabled steps
   useEffect(() => {
@@ -331,11 +342,18 @@ export default function RequirementsWizard() {
       ideaLength: brief.idea.length 
     });
     
-    if (canUseAI(currentKey) && brief.idea.trim()) {
+    // Only trigger if we have a meaningful idea (at least 10 characters)
+    if (canUseAI(currentKey) && brief.idea.trim().length >= 10) {
       const stepKey = currentKey as AssistantNote["step"];
       const selections = brief[currentKey as keyof Brief] as string[];
       console.log("useEffect calling getAssist:", { stepKey, selections });
-      getAssist(stepKey, selections);
+      
+      // Small delay to debounce rapid changes
+      const timeoutId = setTimeout(() => {
+        getAssist(stepKey, selections);
+      }, 500);
+      
+      return () => clearTimeout(timeoutId);
     }
   }, [stepIndex, brief.idea, brief.projectType, getAssist, canUseAI]);
 
@@ -868,7 +886,9 @@ export default function RequirementsWizard() {
               variant="ghost"
               disabled={stepIndex === 0}
               onClick={() => {
-                setLoadingAssist(false); // Reset loading state
+                loadingRef.current = false;
+                lastRequestRef.current = null;
+                setLoadingAssist(false);
                 setStepIndex((i) => Math.max(0, i - 1));
                 scrollToTop();
               }}
@@ -901,7 +921,9 @@ export default function RequirementsWizard() {
                   }
                 })()}
                 onClick={() => {
-                  setLoadingAssist(false); // Reset loading state
+                  loadingRef.current = false;
+                  lastRequestRef.current = null;
+                  setLoadingAssist(false);
                   setStepIndex((i) => i + 1);
                   scrollToTop();
                 }}
