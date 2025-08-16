@@ -10,7 +10,7 @@ interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {
 }
 
 const Heading = React.forwardRef<HTMLHeadingElement, HeadingProps>(
-  ({ className, level = 2, as, children, showDot = false, ...props }, ref) => {
+  ({ className, level = 2, as, children, showDot = false, id, ...props }, ref) => {
     const Component =
       as || (`h${level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6");
 
@@ -23,20 +23,55 @@ const Heading = React.forwardRef<HTMLHeadingElement, HeadingProps>(
       6: "text-xl md:text-2xl font-medium",
     };
 
+    const extractText = (node: React.ReactNode): string => {
+      if (typeof node === "string" || typeof node === "number") return String(node);
+      if (Array.isArray(node)) return node.map(extractText).join(" ");
+      if (React.isValidElement(node)) return extractText((node as React.ReactElement<{ children?: React.ReactNode }>).props.children);
+      return "";
+    };
+
+    const slugify = (str: string) =>
+      str
+        .toLowerCase()
+        .trim()
+        .replace(/[\s\W-]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+    const resolvedTag = Component;
+    const numericLevel = parseInt(resolvedTag.replace("h", ""), 10);
+
+    const autoId = slugify(extractText(children));
+    const anchorId = id || (autoId || undefined);
+
+    const isLinkable = numericLevel === 1 || numericLevel === 2;
+
+    const content = isLinkable && anchorId ? (
+      <a
+        href={`#${anchorId}`}
+        className="no-underline hover:underline decoration-gray-400 inline-flex items-baseline gap-2"
+      >
+        <span className="text-gray-400">#</span>
+        <span>{children}</span>
+      </a>
+    ) : (
+      children
+    );
+
     return React.createElement(
       Component,
       {
         ref,
-        className: cn("text-white font-mono mb-4", sizes[level], className),
+        id: anchorId,
+        className: cn("text-white font-mono mb-4 scroll-mt-24", sizes[level], className),
         ...props,
       },
       showDot ? (
         <>
-          {children}
+          {content}
           <Dot />
         </>
       ) : (
-        children
+        content
       )
     );
   }
