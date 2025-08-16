@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { personalInfo } from "@/lib/data";
 import QuoteWizardClient from "./QuoteWizardClient";
 
-const title = "AI Requirements Wizard";
+const title = "New Enquiry";
 const description =
   "Gather clear, high-level project requirements in minutes. Friendly wizard with AI suggestions and cost-optimized generation.";
 
