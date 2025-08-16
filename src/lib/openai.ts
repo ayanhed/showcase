@@ -8,6 +8,31 @@ export interface ModelConfig {
   temperature: number;
 }
 
+// Input interface for the wizard
+export interface WizardInput {
+  type: string;
+  vibe: string;
+  layout: string;
+  modules: string[];
+  theme: string;
+  cta: string;
+  brand?: string;
+}
+
+// Quote specification interface
+export interface QuoteSpec {
+  title: string;
+  headline: string;
+  subheadline: string;
+  features: string[];
+  modules: string[];
+  description: string;
+  imagePrompt: string;
+  layout: string;
+  theme: string;
+  cta: string;
+}
+
 // Available model configurations for easy switching
 export const MODEL_CONFIGS: Record<string, ModelConfig> = {
   // Production config (current)
@@ -209,6 +234,112 @@ export class OpenAIClient {
       return {};
     }
   }
+
+  /**
+   * Generates a quote specification based on wizard input.
+   */
+  async generateQuoteSpec(input: WizardInput): Promise<QuoteSpec> {
+    const systemPrompt = `You are a professional copywriter and web designer. Generate a compelling quote specification based on the user input. Return JSON only with this exact shape:
+{
+  "title": "Project title",
+  "headline": "Compelling main headline",
+  "subheadline": "Supporting subheadline",
+  "features": ["Feature 1", "Feature 2", "Feature 3"],
+  "modules": ["Module 1", "Module 2", "Module 3"],
+  "description": "Brief compelling description",
+  "imagePrompt": "Detailed image generation prompt",
+  "layout": "layout_type",
+  "theme": "theme_name",
+  "cta": "Call to action text"
+}`;
+
+    await this.rateLimitGuard();
+
+    let content: string | undefined;
+    try {
+      const completion = await this.client.chat.completions.create({
+        model: this.modelConfig.textModel,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: JSON.stringify(input) },
+        ],
+        max_tokens: this.modelConfig.maxTokens,
+        temperature: this.modelConfig.temperature,
+        response_format: { type: "json_object" },
+      });
+      content = completion.choices[0]?.message?.content || undefined;
+    } catch (err) {
+      console.error("OpenRouter chat error (quote spec):", err);
+      throw err;
+    }
+
+    if (!content) {
+      throw new Error("No content received for quote specification");
+    }
+
+          try {
+        const parsed = JSON.parse(content) as QuoteSpec;
+        return {
+          title: truncateText(parsed.title || "Your Project", 40),
+          headline: truncateText(parsed.headline || "Get Started Today", 60),
+          subheadline: truncateText(parsed.subheadline || "Transform your business", 100),
+          features: Array.isArray(parsed.features) 
+            ? parsed.features.slice(0, 5).map(f => truncateText(f, 50))
+            : ["Feature 1", "Feature 2", "Feature 3"],
+          modules: Array.isArray(parsed.modules) 
+            ? parsed.modules.slice(0, 8).map(m => truncateText(m, 30))
+            : input.modules || ["Core Module", "Advanced Module"],
+          description: truncateText(parsed.description || "Professional solution for your needs", 200),
+          imagePrompt: truncateText(parsed.imagePrompt || "Modern professional website", 300),
+          layout: parsed.layout || input.layout || "hero_features_cta",
+          theme: parsed.theme || input.theme || "light",
+          cta: truncateText(parsed.cta || input.cta || "Get Started", 20)
+        };
+      } catch {
+        // Fallback if parsing fails
+        return {
+          title: "Your Project",
+          headline: "Get Started Today",
+          subheadline: "Transform your business with our solution",
+          features: ["Professional Design", "Fast Performance", "Easy to Use"],
+          modules: input.modules || ["Core Module", "Advanced Module"],
+          description: "A professional solution tailored to your needs",
+          imagePrompt: "Modern, clean, professional website interface",
+          layout: input.layout || "hero_features_cta",
+          theme: input.theme || "light",
+          cta: input.cta || "Get Started"
+        };
+      }
+  }
+
+  /**
+   * Generates an image based on the quote specification.
+   */
+  async generateImage(spec: QuoteSpec): Promise<string> {
+    await this.rateLimitGuard();
+
+    try {
+      const response = await this.client.images.generate({
+        model: "dall-e-3",
+        prompt: spec.imagePrompt,
+        n: 1,
+        size: "1024x1024",
+        quality: "standard",
+        style: "natural"
+      });
+
+      const imageUrl = response.data?.[0]?.url;
+      if (!imageUrl) {
+        throw new Error("No image URL received from API");
+      }
+
+      return imageUrl;
+    } catch (err) {
+      console.error("Image generation error:", err);
+      // Return a fallback placeholder image
+      return "https://via.placeholder.com/1024x1024/f0f0f0/666666?text=Generated+Image";
+    }
+  }
 }
 
 // Lazy initialization to avoid client-side instantiation
@@ -246,3 +377,16 @@ export function listAvailableModels(): string[] {
 export function getModelConfig(profile: string): ModelConfig | null {
   return MODEL_CONFIGS[profile] || null;
 }
+
+// Export the openai instance for use in Netlify functions and other server-side code
+export const openai = {
+  generateQuoteSpec: (input: WizardInput): Promise<QuoteSpec> => {
+    return getOpenAIInstance().generateQuoteSpec(input);
+  },
+  generateImage: (spec: QuoteSpec): Promise<string> => {
+    return getOpenAIInstance().generateImage(spec);
+  },
+  generateAssistantSuggestions: (input: AssistInput): Promise<AssistResponse> => {
+    return getOpenAIInstance().generateAssistantSuggestions(input);
+  }
+};
