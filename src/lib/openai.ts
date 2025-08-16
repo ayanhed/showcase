@@ -1,200 +1,248 @@
-import { estimateTokens, truncateText } from './cost';
+import { estimateTokens, truncateText } from "./cost";
+import OpenAI from "openai";
 
-export interface QuoteSpec {
-  title: string;
-  palette: string[];
-  layout: string;
-  modules: string[];
-  vibe?: string;
-  copy: {
-    headline: string;
-    cta: string;
-  };
-  accessibility: {
-    contrast: string;
-  };
+// Model configuration interface
+export interface ModelConfig {
+  textModel: string;
+  maxTokens: number;
+  temperature: number;
 }
 
-export interface WizardInput {
-  type: string;
-  vibe: string;
-  layout: string;
-  modules: string[];
-  theme: string;
-  cta: string;
-  brand?: string;
+// Available model configurations for easy switching
+export const MODEL_CONFIGS: Record<string, ModelConfig> = {
+  // Production config (current)
+  production: {
+    textModel: "openai/gpt-4o-mini",
+    maxTokens: 300,
+    temperature: 0.5,
+  },
+  // Designer-focused: best for high-fidelity specs and UI prompts
+  designer: {
+    textModel: "openai/gpt-4o",
+    maxTokens: 600,
+    temperature: 0.6,
+  },
+  // GPT image model powered by GPT family (closest to 4o image generation via Images API)
+  gpt4o_image: {
+    textModel: "openai/gpt-4o",
+    maxTokens: 600,
+    temperature: 0.6,
+  },
+  // Fast and cheap for testing
+  fast: {
+    textModel: "openai/gpt-3.5-turbo",
+    maxTokens: 200,
+    temperature: 0.3,
+  },
+  // High quality for testing
+  quality: {
+    textModel: "openai/gpt-4o",
+    maxTokens: 500,
+    temperature: 0.7,
+  },
+  // Ultra fast for rapid testing
+  rapid: {
+    textModel: "openai/gpt-3.5-turbo",
+    maxTokens: 150,
+    temperature: 0.1,
+  },
+};
+
+// Get current model configuration from environment or default to production
+function getCurrentModelConfig(): ModelConfig {
+  const modelProfile = process.env.OPENAI_MODEL_PROFILE || "designer";
+  return MODEL_CONFIGS[modelProfile] || MODEL_CONFIGS.production;
+}
+
+// Assistant suggestions for redesigned requirements wizard
+export interface AssistInput {
+  step: "goals" | "features" | "audience" | "priorities";
+  description: string; // truncated to 200 chars
+  projectType: string; // Website | Web App | Mobile App | Software Tool | Integration/API
+  selections?: string[]; // current selected chips for the step
+}
+
+export interface AssistResponse {
+  suggestions?: string[];
+  question?: string;
+  warnings?: string[];
 }
 
 // Rate limiting and backoff
 let lastCallTime = 0;
 const MIN_CALL_INTERVAL = 1000; // 1 second
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const exponentialBackoff = async (attempt: number): Promise<void> => {
-  const baseDelay = 1000;
-  const maxDelay = 30000;
-  const delay = Math.min(baseDelay * Math.pow(2, attempt), maxDelay);
-  const jitter = Math.random() * 0.1 * delay;
-  await new Promise(resolve => setTimeout(resolve, delay + jitter));
-};
-
-// OpenAI client with streaming
+// OpenRouter-backed client using the OpenAI SDK
 export class OpenAIClient {
-  private apiKey: string;
-  private baseUrl: string;
+  private routerApiKey: string;
+  private client: OpenAI;
+  private modelConfig: ModelConfig;
 
   constructor() {
-    this.apiKey = process.env.OPENAI_API_KEY || '';
-    this.baseUrl = 'https://api.openai.com/v1';
+    this.routerApiKey = process.env.OPENROUTER_API_KEY || "";
+    this.modelConfig = getCurrentModelConfig();
+
+    if (!this.routerApiKey) {
+      throw new Error("OPENROUTER_API_KEY environment variable is not set");
+    }
+
+    const referer =
+      process.env.OPENROUTER_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "";
+    const title =
+      process.env.OPENROUTER_APP_TITLE ||
+      process.env.NEXT_PUBLIC_SITE_NAME ||
+      "Showcase";
+
+    this.client = new OpenAI({
+      baseURL: "https://openrouter.ai/api/v1",
+      apiKey: this.routerApiKey,
+      defaultHeaders: {
+        ...(referer ? { "HTTP-Referer": referer } : {}),
+        ...(title ? { "X-Title": title } : {}),
+      },
+    });
   }
 
-  private async makeRequest(endpoint: string, options: RequestInit): Promise<Response> {
+  // Method to get current model configuration
+  getCurrentConfig(): ModelConfig {
+    return this.modelConfig;
+  }
+
+  // Method to switch model configuration
+  switchModel(profile: string): void {
+    if (MODEL_CONFIGS[profile]) {
+      this.modelConfig = MODEL_CONFIGS[profile];
+      console.log(`Switched to model profile: ${profile}`);
+    } else {
+      console.warn(
+        `Unknown model profile: ${profile}. Available profiles: ${Object.keys(
+          MODEL_CONFIGS
+        ).join(", ")}`
+      );
+    }
+  }
+
+  private async rateLimitGuard(): Promise<void> {
     const now = Date.now();
     if (now - lastCallTime < MIN_CALL_INTERVAL) {
       await delay(MIN_CALL_INTERVAL - (now - lastCallTime));
     }
     lastCallTime = Date.now();
-
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      ...options,
-      headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    });
-
-    if (response.status === 429) {
-      // Rate limited - implement exponential backoff
-      const attempt = parseInt(response.headers.get('x-ratelimit-reset-requests') || '1');
-      await exponentialBackoff(attempt);
-      return this.makeRequest(endpoint, options);
-    }
-
-    if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
-    }
-
-    return response;
   }
 
-  async generateQuoteSpec(input: WizardInput): Promise<QuoteSpec> {
-    const systemPrompt = 'You produce terse, strictly-valid JSON specs for UI mocks. No prose. If unsure, pick sensible defaults. Keep strings short.';
-    
-    const userContent = JSON.stringify({
-      type: input.type,
-      vibe: input.vibe,
-      layout: input.layout,
-      modules: input.modules,
-      theme: input.theme,
-      cta: truncateText(input.cta, 20),
-      brand: input.brand || 'default'
-    });
+  /**
+   * Generates AI assistant suggestions for the requirements wizard.
+   *
+   * This method provides contextual suggestions, clarifying questions, and warnings
+   * to help non-technical users better describe their software project needs.
+   *
+   * @param input - The assistant input containing step context and user selections
+   * @returns Promise resolving to assistant suggestions with optional fields
+   *
+   * @example
+   * ```typescript
+   * const suggestions = await client.generateAssistantSuggestions({
+   *   step: "goals",
+   *   projectType: "Website",
+   *   description: "A simple site to showcase my services",
+   *   selections: ["Get customers"]
+   * });
+   * // Returns: { suggestions: ["Share content"], question: "Is your main goal to sell or inform?" }
+   * ```
+   */
+  async generateAssistantSuggestions(
+    input: AssistInput
+  ): Promise<AssistResponse> {
+    const systemPrompt = `You are a friendly project assistant helping non-technical people describe their software ideas.\nAlways respond in plain, everyday language — no technical jargon.\nKeep answers short: at most 1–2 simple sentences, or a list of up to 3 chip-style suggestions.\nNever give long explanations or code.\nIf the user's request is unclear, ask only one simple follow-up question.\nFocus on websites, apps, and software projects only — politely steer back if off-topic.\nYour role is to make their idea clearer, not more complicated.\n\nReturn JSON only with this exact shape (omit empty fields):\n{\n  "suggestions": ["Chip", "Chip", "Chip"],\n  "question": "One short follow-up if needed",\n  "warnings": ["Short warning note if there are trade-offs"]\n}`;
 
-    const inputTokens = estimateTokens(systemPrompt + userContent);
-    console.log(`Estimated input tokens: ${inputTokens}`);
+    const payload = {
+      step: input.step,
+      projectType: input.projectType,
+      description: truncateText(input.description || "", 200),
+      selections: Array.isArray(input.selections)
+        ? input.selections.slice(0, 10)
+        : [],
+    };
 
-    const response = await this.makeRequest('/chat/completions', {
-      method: 'POST',
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
+    await this.rateLimitGuard();
+
+    let content: string | undefined;
+    try {
+      const completion = await this.client.chat.completions.create({
+        model: this.modelConfig.textModel,
         messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userContent }
+          { role: "system", content: systemPrompt },
+          { role: "user", content: JSON.stringify(payload) },
         ],
-        max_tokens: 300,
-        temperature: 0.5,
-        response_format: { type: 'json_object' },
-        stream: false
-      })
-    });
+        max_tokens: Math.min(200, this.modelConfig.maxTokens),
+        temperature: Math.min(0.6, this.modelConfig.temperature),
+        response_format: { type: "json_object" },
+      });
+      content = completion.choices[0]?.message?.content || undefined;
+    } catch (err) {
+      console.error("OpenRouter chat error (assist):", err);
+      throw err;
+    }
 
-    const data = await response.json();
-    const content = data.choices[0]?.message?.content;
-    
     if (!content) {
-      throw new Error('No content received from OpenAI');
+      throw new Error("No content received for assistant suggestions");
     }
 
     try {
-      const spec = JSON.parse(content);
-      return this.validateQuoteSpec(spec);
+      const parsed = JSON.parse(content) as AssistResponse;
+      // Normalize lengths per rules
+      return {
+        suggestions: Array.isArray(parsed.suggestions)
+          ? parsed.suggestions.slice(0, 3).map((s) => truncateText(s, 40))
+          : undefined,
+        question: parsed.question
+          ? truncateText(parsed.question, 120)
+          : undefined,
+        warnings: Array.isArray(parsed.warnings)
+          ? parsed.warnings.slice(0, 2).map((w) => truncateText(w, 120))
+          : undefined,
+      };
     } catch {
-      console.error('Failed to parse JSON response:', content);
-      throw new Error('Invalid JSON response from AI');
+      // If parsing fails, fall back with no AI content per rules
+      return {};
     }
-  }
-
-  private validateQuoteSpec(spec: Record<string, unknown>): QuoteSpec {
-    // Ensure required fields exist with sensible defaults
-    return {
-      title: (spec.title as string) || 'Project Mock',
-      palette: Array.isArray(spec.palette) ? (spec.palette as string[]) : ['#3b82f6', '#1f2937'],
-      layout: (spec.layout as string) || 'hero_features_cta',
-      modules: Array.isArray(spec.modules) ? (spec.modules as string[]) : [],
-      vibe: (spec.vibe as string) || 'minimal',
-      copy: {
-        headline: ((spec.copy as Record<string, unknown>)?.headline as string) || 'Welcome',
-        cta: ((spec.copy as Record<string, unknown>)?.cta as string) || 'Get Started'
-      },
-      accessibility: {
-        contrast: ((spec.accessibility as Record<string, unknown>)?.contrast as string) || 'AA'
-      }
-    };
-  }
-
-  async generateImage(spec: QuoteSpec): Promise<string> {
-    const prompt = this.buildImagePrompt(spec);
-    
-    const response = await this.makeRequest('/images/generations', {
-      method: 'POST',
-      body: JSON.stringify({
-        model: 'dall-e-3',
-        prompt: prompt,
-        n: 1,
-        size: '1024x768',
-        quality: 'standard',
-        response_format: 'url'
-      })
-    });
-
-    const data = await response.json();
-    const imageUrl = data.data[0]?.url;
-    
-    if (!imageUrl) {
-      throw new Error('No image URL received from OpenAI');
-    }
-
-    return imageUrl;
-  }
-
-  private buildImagePrompt(spec: QuoteSpec): string {
-    const layoutDescriptions = {
-      hero_features_cta: 'hero section with features below and call-to-action button',
-      sidebar_app: 'sidebar navigation with main content area',
-      auth_dashboard: 'login form with dashboard interface',
-      storefront_grid: 'product grid layout with cards',
-      marketing_landing: 'marketing landing page with conversion elements'
-    };
-
-    const vibeDescriptions = {
-      minimal: 'minimalist design with clean lines and white space',
-      corporate: 'professional corporate design with blue tones',
-      playful: 'colorful and fun design with rounded elements',
-      bold: 'high contrast design with strong typography',
-      luxury: 'elegant design with gold accents and premium feel'
-    };
-
-    const layout = layoutDescriptions[spec.layout as keyof typeof layoutDescriptions] || 'modern web interface';
-    const vibe = vibeDescriptions[spec.vibe as keyof typeof vibeDescriptions] || 'clean design';
-    const colors = spec.palette.join(' and ');
-    
-    const modules = spec.modules.length > 0 ? 
-      `including ${spec.modules.slice(0, 3).join(', ')} sections` : '';
-
-    return `A single screen ${layout} with ${vibe} using ${colors} color palette, ${modules}. Clean UI mockup with sample text "${spec.copy.headline}" and "${spec.copy.cta}" button. No real brand names, no photos, just interface elements.`;
   }
 }
 
-export const openai = new OpenAIClient();
+// Lazy initialization to avoid client-side instantiation
+let openaiInstance: OpenAIClient | null = null;
+
+export function getOpenAIInstance(): OpenAIClient {
+  if (!openaiInstance) {
+    // Only create instance on server side
+    if (typeof window === "undefined") {
+      openaiInstance = new OpenAIClient();
+    } else {
+      throw new Error("OpenAI client cannot be used on the client side");
+    }
+  }
+  return openaiInstance;
+}
+
+// Utility functions for easy model switching
+export function switchModel(profile: string): void {
+  getOpenAIInstance().switchModel(profile);
+}
+
+export function getCurrentModelInfo(): ModelConfig {
+  // Return default config for client-side usage
+  if (typeof window !== "undefined") {
+    return MODEL_CONFIGS.production;
+  }
+  return getOpenAIInstance().getCurrentConfig();
+}
+
+export function listAvailableModels(): string[] {
+  return Object.keys(MODEL_CONFIGS);
+}
+
+export function getModelConfig(profile: string): ModelConfig | null {
+  return MODEL_CONFIGS[profile] || null;
+}
