@@ -213,15 +213,13 @@ export default function RequirementsWizard() {
   /**
    * Checks if AI suggestions can be used for the current step.
    *
-   * AI is only available for specific steps and limited to 7 calls per session
-   * to control costs and maintain simplicity.
+   * AI is only available for specific steps.
    *
    * @param key - The current step key
    * @returns True if AI can be used for this step
    */
   const canUseAI = (key: string) =>
-    ["goals", "features", "audience", "priorities"].includes(key) &&
-    aiCalls < 7;
+    ["goals", "features", "audience", "priorities"].includes(key);
 
   /**
    * Fetches AI assistant suggestions for the current step.
@@ -421,37 +419,7 @@ export default function RequirementsWizard() {
                     </div>
                   </div>
 
-                  {/* Helpful hints */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-4xl mx-auto mt-8">
-                    <Card variant="outlined" className="p-4 text-center border-gray-700/50 bg-gray-800/30">
-                      <div className="text-2xl mb-2">🌐</div>
-                      <Text size="sm" className="text-gray-300 font-medium">Website</Text>
-                      <Text size="xs" variant="muted">Portfolio, business site, blog</Text>
-                    </Card>
-                    <Card variant="outlined" className="p-4 text-center border-gray-700/50 bg-gray-800/30">
-                      <div className="text-2xl mb-2">⚡</div>
-                      <Text size="sm" className="text-gray-300 font-medium">Web App</Text>
-                      <Text size="xs" variant="muted">Dashboard, SaaS, platform</Text>
-                    </Card>
-                    <Card variant="outlined" className="p-4 text-center border-gray-700/50 bg-gray-800/30">
-                      <div className="text-2xl mb-2">📱</div>
-                      <Text size="sm" className="text-gray-300 font-medium">Mobile App</Text>
-                      <Text size="xs" variant="muted">iOS, Android, React Native</Text>
-                    </Card>
-                  </div>
 
-                  {brief.idea && !brief.projectType && (
-                    <div className="w-full max-w-2xl mx-auto">
-                      <Card variant="outlined" className="border-blue-700/50 bg-blue-900/20 p-4">
-                        <Stack direction="horizontal" spacing="sm" align="center">
-                          <div className="text-blue-400 text-lg">💡</div>
-                          <Text size="sm" className="text-blue-100">
-                            Great! We&apos;ll help you choose the best project type in the next step.
-                          </Text>
-                        </Stack>
-                      </Card>
-                    </div>
-                  )}
                 </Stack>
               </div>
             )}
@@ -504,30 +472,40 @@ export default function RequirementsWizard() {
                   {assistant?.step === "goals" &&
                     assistant.suggestions &&
                     suggestionsVisible && (
-                      <div className="space-y-1 w-full">
-                        {assistant.suggestions.map((s, index) => (
-                          <Chip
-                            key={s}
-                            label={s}
-                            selected={brief.goals.includes(s)}
-                            onClick={() =>
-                              setBrief((b) => ({
-                                ...b,
-                                goals: toggleSelection(b.goals, s),
-                              }))
-                            }
-                            className={`animate-fadeIn`}
-                            style={{ animationDelay: `${index * 100}ms` }}
-                          />
-                        ))}
+                      <div className="w-full">
+                        <Text size="sm" variant="muted" className="mb-3">
+                          AI Suggestions:
+                        </Text>
+                        <Stack spacing="sm">
+                          {assistant.suggestions.map((s, index) => (
+                            <Card
+                              key={s}
+                              variant="outlined"
+                              className={`cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] animate-fadeIn border-blue-600/30 bg-blue-900/10 hover:bg-blue-900/20 ${
+                                brief.goals.includes(s) ? 'border-blue-500 bg-blue-900/30' : ''
+                              }`}
+                              style={{ animationDelay: `${index * 100}ms` }}
+                              onClick={() =>
+                                setBrief((b) => ({
+                                  ...b,
+                                  goals: toggleSelection(b.goals, s),
+                                }))
+                              }
+                            >
+                              <Stack direction="horizontal" spacing="sm" align="center">
+                                <div className={`w-2 h-2 rounded-full ${brief.goals.includes(s) ? 'bg-blue-400' : 'bg-gray-600'}`} />
+                                <Text size="sm" className="text-white flex-1">{s}</Text>
+                                {brief.goals.includes(s) && (
+                                  <div className="text-blue-400 text-sm">✓</div>
+                                )}
+                              </Stack>
+                            </Card>
+                          ))}
+                        </Stack>
                       </div>
                     )}
                 </Stack>
-                {aiCalls >= 20 && (
-                  <Text size="sm" variant="muted">
-                    AI suggestion limit reached
-                  </Text>
-                )}
+
                 {assistant?.step === "goals" &&
                   assistant.question &&
                   suggestionsVisible && (
@@ -570,30 +548,39 @@ export default function RequirementsWizard() {
                   {assistant?.step === "features" &&
                     assistant.suggestions &&
                     suggestionsVisible && (
-                      <div className="space-y-1 w-full">
-                        {assistant.suggestions.map((s, index) => (
-                          <Chip
-                            key={s}
-                            label={s}
-                            selected={brief.features.includes(s)}
-                            onClick={() =>
-                              setBrief((b) => ({
-                                ...b,
-                                features: toggleSelection(b.features, s),
-                              }))
-                            }
-                            className={`animate-fadeIn`}
-                            style={{ animationDelay: `${index * 100}ms` }}
-                          />
-                        ))}
+                      <div className="w-full">
+                        <Text size="sm" variant="muted" className="mb-3">
+                          AI Suggestions:
+                        </Text>
+                        <Stack spacing="sm">
+                          {assistant.suggestions.map((s, index) => (
+                            <Card
+                              key={s}
+                              variant="outlined"
+                              className={`cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] animate-fadeIn border-blue-600/30 bg-blue-900/10 hover:bg-blue-900/20 ${
+                                brief.features.includes(s) ? 'border-blue-500 bg-blue-900/30' : ''
+                              }`}
+                              style={{ animationDelay: `${index * 100}ms` }}
+                              onClick={() =>
+                                setBrief((b) => ({
+                                  ...b,
+                                  features: toggleSelection(b.features, s),
+                                }))
+                              }
+                            >
+                              <Stack direction="horizontal" spacing="sm" align="center">
+                                <div className={`w-2 h-2 rounded-full ${brief.features.includes(s) ? 'bg-blue-400' : 'bg-gray-600'}`} />
+                                <Text size="sm" className="text-white flex-1">{s}</Text>
+                                {brief.features.includes(s) && (
+                                  <div className="text-blue-400 text-sm">✓</div>
+                                )}
+                              </Stack>
+                            </Card>
+                          ))}
+                        </Stack>
                       </div>
                     )}
                 </Stack>
-                {aiCalls >= 7 && (
-                  <Text size="sm" variant="muted">
-                    AI suggestion limit reached
-                  </Text>
-                )}
               </Stack>
             )}
 
@@ -644,30 +631,39 @@ export default function RequirementsWizard() {
                   {assistant?.step === "audience" &&
                     assistant.suggestions &&
                     suggestionsVisible && (
-                      <div className="space-y-1 w-full">
-                        {assistant.suggestions.map((s, index) => (
-                          <Chip
-                            key={s}
-                            label={s}
-                            selected={brief.audience.includes(s)}
-                            onClick={() =>
-                              setBrief((b) => ({
-                                ...b,
-                                audience: toggleSelection(b.audience, s),
-                              }))
-                            }
-                            className={`animate-fadeIn`}
-                            style={{ animationDelay: `${index * 100}ms` }}
-                          />
-                        ))}
+                      <div className="w-full">
+                        <Text size="sm" variant="muted" className="mb-3">
+                          AI Suggestions:
+                        </Text>
+                        <Stack spacing="sm">
+                          {assistant.suggestions.map((s, index) => (
+                            <Card
+                              key={s}
+                              variant="outlined"
+                              className={`cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] animate-fadeIn border-blue-600/30 bg-blue-900/10 hover:bg-blue-900/20 ${
+                                brief.audience.includes(s) ? 'border-blue-500 bg-blue-900/30' : ''
+                              }`}
+                              style={{ animationDelay: `${index * 100}ms` }}
+                              onClick={() =>
+                                setBrief((b) => ({
+                                  ...b,
+                                  audience: toggleSelection(b.audience, s),
+                                }))
+                              }
+                            >
+                              <Stack direction="horizontal" spacing="sm" align="center">
+                                <div className={`w-2 h-2 rounded-full ${brief.audience.includes(s) ? 'bg-blue-400' : 'bg-gray-600'}`} />
+                                <Text size="sm" className="text-white flex-1">{s}</Text>
+                                {brief.audience.includes(s) && (
+                                  <div className="text-blue-400 text-sm">✓</div>
+                                )}
+                              </Stack>
+                            </Card>
+                          ))}
+                        </Stack>
                       </div>
                     )}
                 </Stack>
-                {aiCalls >= 7 && (
-                  <Text size="sm" variant="muted">
-                    AI suggestion limit reached
-                  </Text>
-                )}
                 {assistant?.step === "audience" &&
                   assistant.question &&
                   suggestionsVisible && (
@@ -706,11 +702,6 @@ export default function RequirementsWizard() {
                       </Text>
                     </Card>
                   )}
-                {aiCalls >= 7 && (
-                  <Text size="sm" variant="muted">
-                    AI suggestion limit reached
-                  </Text>
-                )}
               </Stack>
             )}
 

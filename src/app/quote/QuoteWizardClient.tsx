@@ -11,7 +11,7 @@ export default function QuoteWizardClient() {
         <Animate type="slideUp" duration={0.8} delay={0.2} once={true}>
           <div className="text-center mb-12">
             <Heading level={1} showDot className="mb-6">
-              AI Requirements Wizard
+              New Enquiry
             </Heading>
             <Text
               size="lg"
