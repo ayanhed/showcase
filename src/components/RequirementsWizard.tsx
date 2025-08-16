@@ -182,6 +182,10 @@ export default function RequirementsWizard() {
   const [error, setError] = useState<string | null>(null);
   const [suggestionsVisible, setSuggestionsVisible] = useState(false);
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const [brief, setBrief] = useState<Brief>({
     projectType: "",
     idea: "",
@@ -234,10 +238,16 @@ export default function RequirementsWizard() {
     stepKey: AssistantNote["step"],
     selections: string[]
   ) {
-    if (!canUseAI(stepKey)) return;
+    if (!canUseAI(stepKey) || loadingAssist) return;
     setLoadingAssist(true);
     setError(null);
     setSuggestionsVisible(false);
+
+    // Set a timeout to prevent indefinite loading
+    const timeoutId = setTimeout(() => {
+      setLoadingAssist(false);
+      console.warn("AI assistance timed out");
+    }, 10000); // 10 second timeout
 
     try {
       const res = await fetch("/api/assist", {
@@ -250,6 +260,11 @@ export default function RequirementsWizard() {
           selections,
         }),
       });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+      
       const data = await res.json();
       const note: AssistantNote = { step: stepKey, ...data };
       setAssistant(note);
@@ -261,9 +276,13 @@ export default function RequirementsWizard() {
 
       // Animate suggestions in
       setTimeout(() => setSuggestionsVisible(true), 100);
-    } catch (_) {
-      // ignore; continue with predefined options
+    } catch (error) {
+      console.warn("AI assistance failed:", error);
+      // Clear any existing assistant state for this step
+      setAssistant(null);
+      // Still show existing predefined options
     } finally {
+      clearTimeout(timeoutId);
       setLoadingAssist(false);
     }
   }
@@ -806,7 +825,11 @@ export default function RequirementsWizard() {
             <Button
               variant="ghost"
               disabled={stepIndex === 0}
-              onClick={() => setStepIndex((i) => Math.max(0, i - 1))}
+              onClick={() => {
+                setLoadingAssist(false); // Reset loading state
+                setStepIndex((i) => Math.max(0, i - 1));
+                scrollToTop();
+              }}
               className="min-w-0 px-3 sm:px-4"
             >
               <span className="hidden sm:inline">Back</span>
@@ -835,7 +858,11 @@ export default function RequirementsWizard() {
                       return false;
                   }
                 })()}
-                onClick={() => setStepIndex((i) => i + 1)}
+                onClick={() => {
+                  setLoadingAssist(false); // Reset loading state
+                  setStepIndex((i) => i + 1);
+                  scrollToTop();
+                }}
                 className="min-w-0 px-3 sm:px-4"
               >
                 <span className="hidden sm:inline">Next</span>
