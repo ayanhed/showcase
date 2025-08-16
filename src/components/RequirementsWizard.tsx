@@ -104,7 +104,7 @@ function Chip({
     <Badge
       variant={selected ? "primary" : "secondary"}
       onClick={onClick}
-      className={`cursor-pointer select-none ${className}`}
+      className={`cursor-pointer select-none transition-all duration-200 hover:scale-105 active:scale-95 min-h-[44px] flex items-center px-3 py-2 text-sm sm:text-base ${className}`}
       style={style}
     >
       {label}
@@ -125,25 +125,29 @@ function ReorderList({
         <Card
           key={item}
           variant="outlined"
-          className="flex items-center justify-between"
+          className="flex items-center justify-between p-3 sm:p-4"
         >
-          <span className="text-sm text-white">{item}</span>
+          <span className="text-sm sm:text-base text-white flex-1 pr-2">{item}</span>
           <Stack direction="horizontal" spacing="xs">
             <Button
               size="sm"
               variant="secondary"
               disabled={index === 0}
               onClick={() => onMove(index, index - 1)}
+              className="min-w-0 px-2 sm:px-3"
             >
-              Up
+              <span className="hidden sm:inline">Up</span>
+              <span className="sm:hidden">↑</span>
             </Button>
             <Button
               size="sm"
               variant="secondary"
               disabled={index === items.length - 1}
               onClick={() => onMove(index, index + 1)}
+              className="min-w-0 px-2 sm:px-3"
             >
-              Down
+              <span className="hidden sm:inline">Down</span>
+              <span className="sm:hidden">↓</span>
             </Button>
           </Stack>
         </Card>
@@ -308,78 +312,158 @@ export default function RequirementsWizard() {
   const currentKey = steps[stepIndex].key;
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-4 sm:p-6">
       <Card variant="dark">
         <Stack spacing="lg">
-          <Stack direction="horizontal" justify="between" align="center">
-            <Stack direction="horizontal" spacing="sm" align="center">
-              {steps.map((s, i) => (
-                <Stack
-                  key={s.key}
-                  direction="horizontal"
-                  align="center"
-                  spacing="sm"
-                >
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                      i < stepIndex
-                        ? "bg-green-500 text-white"
-                        : i === stepIndex
-                        ? "bg-accent-blue text-white"
-                        : "bg-gray-700 text-gray-400"
-                    }`}
+          {/* Mobile-friendly Progress - show on small screens only current step */}
+          <div className="hidden sm:block">
+            <Stack direction="horizontal" justify="between" align="center">
+              <Stack direction="horizontal" spacing="sm" align="center">
+                {steps.map((s, i) => (
+                  <Stack
+                    key={s.key}
+                    direction="horizontal"
+                    align="center"
+                    spacing="sm"
                   >
-                    {i + 1}
-                  </div>
-                  {i < steps.length - 1 && (
                     <div
-                      className={`w-12 h-0.5 ${
-                        i < stepIndex ? "bg-green-500" : "bg-gray-700"
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                        i < stepIndex
+                          ? "bg-green-500 text-white"
+                          : i === stepIndex
+                          ? "bg-accent-blue text-white"
+                          : "bg-gray-700 text-gray-400"
                       }`}
-                    />
-                  )}
-                </Stack>
-              ))}
+                    >
+                      {i + 1}
+                    </div>
+                    {i < steps.length - 1 && (
+                      <div
+                        className={`w-12 h-0.5 ${
+                          i < stepIndex ? "bg-green-500" : "bg-gray-700"
+                        }`}
+                      />
+                    )}
+                  </Stack>
+                ))}
+              </Stack>
+              <span className="text-sm text-gray-400">
+                Step {stepIndex + 1} of {steps.length}
+              </span>
             </Stack>
-            <span className="text-sm text-gray-400">
-              Step {stepIndex + 1} of {steps.length}
-            </span>
-          </Stack>
+          </div>
+
+          {/* Mobile Progress - simplified for small screens */}
+          <div className="block sm:hidden">
+            <Stack direction="horizontal" justify="between" align="center">
+              <div className="text-sm text-gray-400">
+                Step {stepIndex + 1} of {steps.length}
+              </div>
+              <div className="flex items-center space-x-1">
+                {steps.map((_, i) => (
+                  <div
+                    key={i}
+                    className={`w-2 h-2 rounded-full ${
+                      i < stepIndex
+                        ? "bg-green-500"
+                        : i === stepIndex
+                        ? "bg-accent-blue"
+                        : "bg-gray-700"
+                    }`}
+                  />
+                ))}
+              </div>
+            </Stack>
+          </div>
 
           <Stack spacing="lg">
-            <Heading level={4} className="mb-0">
-              {steps[stepIndex].title}
-            </Heading>
+            {currentKey !== "intro" && (
+              <Heading level={4} className="mb-0 text-center sm:text-left">
+                {steps[stepIndex].title}
+              </Heading>
+            )}
 
             {currentKey === "intro" && (
-              <Stack spacing="md">
-                <Input
-                  label="Your idea"
-                  type="text"
-                  maxLength={200}
-                  value={brief.idea}
-                  onChange={(e) =>
-                    setBrief((b) => ({ ...b, idea: e.target.value }))
-                  }
-                  placeholder="Example: A simple site to share my services and let people book"
-                  helperText={`${brief.idea.length}/200 characters`}
-                />
-                {brief.idea && !brief.projectType && (
-                  <Text size="sm" variant="muted">
-                    This tool is for software projects. Pick the closest option
-                    in the next step.
-                  </Text>
-                )}
-              </Stack>
+              <div className="py-8 sm:py-12 text-center">
+                <Stack spacing="xl" align="center">
+                  {/* Hero Section */}
+                  <Stack spacing="lg" align="center" className="max-w-3xl mx-auto">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                      <span className="text-2xl sm:text-3xl">✨</span>
+                    </div>
+                    <Heading level={2} className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                      Tell me about your idea
+                    </Heading>
+                    <Text 
+                      size="lg" 
+                      variant="muted" 
+                      className="text-lg sm:text-xl text-gray-300 leading-relaxed"
+                    >
+                      Describe your project vision in your own words. Whether it's a simple website, 
+                      a complex app, or something in between—just share what you have in mind.
+                    </Text>
+                  </Stack>
+
+                  {/* Main Input Area */}
+                  <div className="w-full max-w-4xl mx-auto">
+                    <div className="relative">
+                      <textarea
+                        value={brief.idea}
+                        onChange={(e) =>
+                          setBrief((b) => ({ ...b, idea: e.target.value }))
+                        }
+                        placeholder="Example: I want to build a simple website where I can showcase my photography portfolio, allow clients to book sessions, and maybe sell some prints online. It should look modern and clean..."
+                        maxLength={500}
+                        className="w-full h-32 sm:h-40 px-6 py-4 bg-gray-800/50 border-2 border-gray-700 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:bg-gray-800/70 transition-all duration-200 text-base sm:text-lg leading-relaxed resize-none backdrop-blur-sm"
+                      />
+                      <div className="absolute bottom-4 right-4 text-xs sm:text-sm text-gray-500 bg-gray-900/80 px-2 py-1 rounded-md">
+                        {brief.idea.length}/500
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Helpful hints */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-4xl mx-auto mt-8">
+                    <Card variant="outlined" className="p-4 text-center border-gray-700/50 bg-gray-800/30">
+                      <div className="text-2xl mb-2">🌐</div>
+                      <Text size="sm" className="text-gray-300 font-medium">Website</Text>
+                      <Text size="xs" variant="muted">Portfolio, business site, blog</Text>
+                    </Card>
+                    <Card variant="outlined" className="p-4 text-center border-gray-700/50 bg-gray-800/30">
+                      <div className="text-2xl mb-2">⚡</div>
+                      <Text size="sm" className="text-gray-300 font-medium">Web App</Text>
+                      <Text size="xs" variant="muted">Dashboard, SaaS, platform</Text>
+                    </Card>
+                    <Card variant="outlined" className="p-4 text-center border-gray-700/50 bg-gray-800/30">
+                      <div className="text-2xl mb-2">📱</div>
+                      <Text size="sm" className="text-gray-300 font-medium">Mobile App</Text>
+                      <Text size="xs" variant="muted">iOS, Android, React Native</Text>
+                    </Card>
+                  </div>
+
+                  {brief.idea && !brief.projectType && (
+                    <div className="w-full max-w-2xl mx-auto">
+                      <Card variant="outlined" className="border-blue-700/50 bg-blue-900/20 p-4">
+                        <Stack direction="horizontal" spacing="sm" align="center">
+                          <div className="text-blue-400 text-lg">💡</div>
+                          <Text size="sm" className="text-blue-100">
+                            Great! We'll help you choose the best project type in the next step.
+                          </Text>
+                        </Stack>
+                      </Card>
+                    </div>
+                  )}
+                </Stack>
+              </div>
             )}
 
             {currentKey === "type" && (
-              <Grid cols={3} gap="md" responsive>
+              <Grid cols={2} gap="md" responsive>
                 {PROJECT_TYPES.map((t) => (
                   <Card
                     key={t}
                     variant={brief.projectType === t ? "default" : "outlined"}
-                    className={`cursor-pointer ${
+                    className={`cursor-pointer text-center sm:text-left ${
                       brief.projectType === t
                         ? "border-accent-blue bg-gray-800"
                         : "hover:border-gray-500"
@@ -421,7 +505,7 @@ export default function RequirementsWizard() {
                   {assistant?.step === "goals" &&
                     assistant.suggestions &&
                     suggestionsVisible && (
-                      <div className="space-y-1">
+                      <div className="space-y-1 w-full">
                         {assistant.suggestions.map((s, index) => (
                           <Chip
                             key={s}
@@ -487,7 +571,7 @@ export default function RequirementsWizard() {
                   {assistant?.step === "features" &&
                     assistant.suggestions &&
                     suggestionsVisible && (
-                      <div className="space-y-1">
+                      <div className="space-y-1 w-full">
                         {assistant.suggestions.map((s, index) => (
                           <Chip
                             key={s}
@@ -561,7 +645,7 @@ export default function RequirementsWizard() {
                   {assistant?.step === "audience" &&
                     assistant.suggestions &&
                     suggestionsVisible && (
-                      <div className="space-y-1">
+                      <div className="space-y-1 w-full">
                         {assistant.suggestions.map((s, index) => (
                           <Chip
                             key={s}
@@ -650,7 +734,7 @@ export default function RequirementsWizard() {
                   onChange={(e) =>
                     setBrief((b) => ({ ...b, summary: e.target.value }))
                   }
-                  className="w-full h-32 p-3 rounded bg-gray-800 text-white text-sm"
+                  className="w-full h-32 p-3 rounded bg-gray-800 text-white text-sm resize-none"
                 />
               </Stack>
             )}
@@ -673,7 +757,7 @@ export default function RequirementsWizard() {
                   <Heading level={6} className="mb-0 text-white">
                     Your JSON brief
                   </Heading>
-                  <pre className="mt-2 whitespace-pre-wrap break-words text-xs text-gray-300">
+                  <pre className="mt-2 whitespace-pre-wrap break-words text-xs text-gray-300 overflow-x-auto">
                     {JSON.stringify(
                       {
                         projectType: brief.projectType,
@@ -727,13 +811,16 @@ export default function RequirementsWizard() {
             )}
           </Stack>
 
-          <Stack direction="horizontal" justify="between">
+          {/* Mobile-friendly Navigation */}
+          <Stack direction="horizontal" justify="between" className="pt-4 border-t border-gray-700">
             <Button
               variant="ghost"
               disabled={stepIndex === 0}
               onClick={() => setStepIndex((i) => Math.max(0, i - 1))}
+              className="min-w-0 px-3 sm:px-4"
             >
-              Back
+              <span className="hidden sm:inline">Back</span>
+              <span className="sm:hidden">←</span>
             </Button>
             {stepIndex < steps.length - 1 ? (
               <Button
@@ -741,7 +828,7 @@ export default function RequirementsWizard() {
                 disabled={(() => {
                   switch (currentKey) {
                     case "intro":
-                      return brief.idea.trim().length === 0;
+                      return brief.idea.trim().length < 10;
                     case "type":
                       return !brief.projectType;
                     case "goals":
@@ -759,8 +846,10 @@ export default function RequirementsWizard() {
                   }
                 })()}
                 onClick={() => setStepIndex((i) => i + 1)}
+                className="min-w-0 px-3 sm:px-4"
               >
-                Next
+                <span className="hidden sm:inline">Next</span>
+                <span className="sm:hidden">→</span>
               </Button>
             ) : (
               <Button
@@ -769,8 +858,10 @@ export default function RequirementsWizard() {
                 onClick={() => {
                   // no-op: JSON is ready; you could POST it to your backend here
                 }}
+                className="min-w-0 px-3 sm:px-4"
               >
-                Finish
+                <span className="hidden sm:inline">Finish</span>
+                <span className="sm:hidden">✓</span>
               </Button>
             )}
           </Stack>
